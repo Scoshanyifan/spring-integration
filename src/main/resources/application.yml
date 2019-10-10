@@ -1,0 +1,27 @@
+server:
+  port: 9090
+
+mqtt:
+  server:
+    url: tcp://127.0.0.1:1883
+    username: s:scosyf:mqtt
+    password: 123456
+    publisherid: consumer-publisher
+
+  bizconsumer:
+    bizclientid: consumer-biz-subscriber
+#    bizthreadnum: 4
+    biztopic:
+    - scosyf/biz/+/base/
+    - scosyf/biz/+/log/
+#    rinnai/SR/01/SR/F0FE6BAE428E/res/
+    - scosyf/biz/+/inf/
+
+  syscomsumer:
+    sysclientid: consumer-sys-subscriber
+#    systhreadnum: 2
+    systopic:
+#    $SYS/brokers/emqttd-linnei@10.45.33.195/clients/a:rinnai:SR:01:SR:186582626671565159163590/connected
+    - scosyf/sys/+/client/+/connected
+    - scosyf/sys/+/client/+/disconnected
+
