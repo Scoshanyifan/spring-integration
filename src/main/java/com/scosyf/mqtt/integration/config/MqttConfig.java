@@ -12,112 +12,78 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "mqtt")
 public class MqttConfig {
 
-    private Server server;
-    private BizConsumer bizConsumer;
-    private SysConsumer sysConsumer;
+    private String password;
+    private String url;
+    private String userName;
+    private String publisherId;
 
-    public Server getServer() {
-        return server;
+    private String sysClientId;
+    private String[] sysTopic;
+
+    private String bizClientId;
+    private String[] bizTopic;
+
+    public String getPassword() {
+        return password;
     }
 
-    public void setServer(Server server) {
-        this.server = server;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public BizConsumer getBizConsumer() {
-        return bizConsumer;
+    public String getUrl() {
+        return url;
     }
 
-    public void setBizConsumer(BizConsumer bizConsumer) {
-        this.bizConsumer = bizConsumer;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public SysConsumer getSysConsumer() {
-        return sysConsumer;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setSysConsumer(SysConsumer sysConsumer) {
-        this.sysConsumer = sysConsumer;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public class Server {
-        private String url;
-        private String userName;
-        private String password;
-        private String publisherId;
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public String getPublisherId() {
-            return publisherId;
-        }
-
-        public void setPublisherId(String publisherId) {
-            this.publisherId = publisherId;
-        }
+    public String getPublisherId() {
+        return publisherId;
     }
 
-    public class BizConsumer {
-        private String bizClientId;
-        private String[] bizTopic;
-
-        public String getBizClientId() {
-            return bizClientId;
-        }
-
-        public void setBizClientId(String bizClientId) {
-            this.bizClientId = bizClientId;
-        }
-
-        public String[] getBizTopic() {
-            return bizTopic;
-        }
-
-        public void setBizTopic(String[] bizTopic) {
-            this.bizTopic = bizTopic;
-        }
+    public void setPublisherId(String publisherId) {
+        this.publisherId = publisherId;
     }
 
-    public class SysConsumer {
-        private String sysClientId;
-        private String[] sysTopic;
+    public String getSysClientId() {
+        return sysClientId;
+    }
 
-        public String getSysClientId() {
-            return sysClientId;
-        }
+    public void setSysClientId(String sysClientId) {
+        this.sysClientId = sysClientId;
+    }
 
-        public void setSysClientId(String sysClientId) {
-            this.sysClientId = sysClientId;
-        }
+    public String[] getSysTopic() {
+        return sysTopic;
+    }
 
-        public String[] getSysTopic() {
-            return sysTopic;
-        }
+    public void setSysTopic(String[] sysTopic) {
+        this.sysTopic = sysTopic;
+    }
 
-        public void setSysTopic(String[] sysTopic) {
-            this.sysTopic = sysTopic;
-        }
+    public String getBizClientId() {
+        return bizClientId;
+    }
+
+    public void setBizClientId(String bizClientId) {
+        this.bizClientId = bizClientId;
+    }
+
+    public String[] getBizTopic() {
+        return bizTopic;
+    }
+
+    public void setBizTopic(String[] bizTopic) {
+        this.bizTopic = bizTopic;
     }
 }

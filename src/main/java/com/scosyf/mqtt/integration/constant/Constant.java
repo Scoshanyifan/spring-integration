@@ -22,6 +22,24 @@ public interface Constant {
     int DEFAULT_QOS                         = 1;
 
 
+    String CONNECTED                        = "connected";
+    String DISCONNECTED                     = "disconnected";
+
+    String USER_NAME                        = "username";
+    String CLIENT_ID                        = "clientid";
+
+    String PTN                              = "ptn";
+
+    String ONLINE                           = "online";
+    String ON                               = "1";
+    String OFF                              = "0";
+
+    String DEFAULT_TOPIC_PERFIX             = "scosyf";
+
+    int CLIENTS_INDEX                       = 3;
+
+    String ONLINE_IP                        = "ipaddress";
+
     /** ======================== payload ======================== */
 
     String PAYLOAD_MSG_TYPE                 = "msg_type";

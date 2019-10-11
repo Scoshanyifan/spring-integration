@@ -12,8 +12,6 @@ public class SpringIntegrationApplication {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(SpringIntegrationApplication.class, args);
-
 
         LOGGER.info("\n========================================================="
                 + "\n                                                         "
@@ -29,6 +27,10 @@ public class SpringIntegrationApplication {
                 + "\n    这是一个基于MQTT订阅的消息处理服务 -                     "
                 + "\n    订阅关键的TOPIC，将收到的mqtt消息处理并最终写入数据        "
                 + "\n=========================================================");
+
+        SpringApplication.run(SpringIntegrationApplication.class, args);
+
+
     }
 
 }

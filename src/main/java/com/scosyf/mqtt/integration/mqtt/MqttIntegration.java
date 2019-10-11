@@ -1,8 +1,10 @@
 package com.scosyf.mqtt.integration.mqtt;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.alibaba.fastjson.JSONObject;
 import com.scosyf.mqtt.integration.config.MqttConfig;
 import com.scosyf.mqtt.integration.constant.Constant;
+import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
+import com.scosyf.mqtt.integration.entity.BizMessage;
 import com.scosyf.mqtt.integration.utils.ExecutorFactoryUtil;
 import com.scosyf.mqtt.integration.utils.MessageTransferUtil;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -23,9 +25,6 @@ import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageHandler;
 
 import java.util.Objects;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * https://docs.spring.io/spring-integration/reference/html/mqtt.html#mqtt
@@ -48,12 +47,12 @@ public class MqttIntegration {
      **/
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
-        MqttConfig.Server server = mqttConfig.getServer();
+        LOGGER.info(">>> mqttConfig:{}", JSONObject.toJSONString(mqttConfig));
 
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setServerURIs(new String[]{server.getUrl()});
-        options.setUserName(server.getUserName());
-        options.setPassword(server.getPassword().toCharArray());
+        options.setServerURIs(new String[]{mqttConfig.getUrl()});
+        options.setUserName(mqttConfig.getUserName());
+        options.setPassword(mqttConfig.getPassword().toCharArray());
 
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
         factory.setConnectionOptions(options);
@@ -61,15 +60,14 @@ public class MqttIntegration {
     }
 
     /**
-     * 业务消息订阅
+     * 系统消息订阅
      *
      **/
     @Bean
-    public MessageProducerSupport bizMsgInBound() {
-        MqttConfig.BizConsumer bizConsumer = mqttConfig.getBizConsumer();
+    public MessageProducerSupport sysMsgInBound() {
 
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(bizConsumer.getBizClientId(), mqttClientFactory(), bizConsumer.getBizTopic());
+                new MqttPahoMessageDrivenChannelAdapter(mqttConfig.getSysClientId(), mqttClientFactory(), mqttConfig.getSysTopic());
 
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setOutputChannel(new DirectChannel());
@@ -79,15 +77,14 @@ public class MqttIntegration {
     }
 
     /**
-     * 系统消息订阅
+     * 业务消息订阅
      *
      **/
     @Bean
-    public MessageProducerSupport sysMsgInBound() {
-        MqttConfig.SysConsumer sysConsumer = mqttConfig.getSysConsumer();
+    public MessageProducerSupport bizMsgInBound() {
 
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(sysConsumer.getSysClientId(), mqttClientFactory(), sysConsumer.getSysTopic());
+                new MqttPahoMessageDrivenChannelAdapter(mqttConfig.getBizClientId(), mqttClientFactory(), mqttConfig.getBizTopic());
 
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setOutputChannel(new DirectChannel());
@@ -103,23 +100,13 @@ public class MqttIntegration {
     @Bean
     public MessageHandler msgOutbound() {
         MqttPahoMessageHandler messageHandler =
-                new MqttPahoMessageHandler(mqttConfig.getServer().getPublisherId(), mqttClientFactory());
+                new MqttPahoMessageHandler(mqttConfig.getPublisherId(), mqttClientFactory());
         messageHandler.setAsync(true);
         return messageHandler;
     }
 
-    /** ======================================== 消息处理 ======================================== */
 
-    /**
-     * 业务消息处理
-     *
-     **/
-    @Bean
-    public IntegrationFlow bizMsgFlow() {
-        return IntegrationFlows.from(bizMsgInBound())
-                .channel(c -> c.executor(ExecutorFactoryUtil.buildBizExecutor()))
-                .handle(MessageTransferUtil::)
-    }
+    /** ======================================== 消息处理 ======================================== */
 
     /**
      * 系统消息处理
@@ -137,4 +124,34 @@ public class MqttIntegration {
                 .get();
     }
 
+    /**
+     * 业务消息处理
+     *
+     **/
+    @Bean
+    public IntegrationFlow bizMsgFlow() {
+        return IntegrationFlows
+                // 消息来源
+                .from(bizMsgInBound())
+                // 分配通道
+                .channel(c -> c.executor(ExecutorFactoryUtil.buildBizExecutor()))
+                // 消息转换成业务使用
+                .handle(MessageTransferUtil::mqttMessage2BizMessage)
+                // 通过route来选择路由，按照msgType分配，走不同的消息处理
+                .<BizMessage, MsgTypeEnum>route(BizMessage::getMsgTypeEnum,
+                        mapping -> mapping
+                                .subFlowMapping(MsgTypeEnum.BOOK, bookIntegrationFlow())
+                                .subFlowMapping(MsgTypeEnum.IMAGE, imageIntegrationFlow())
+                )
+                // 获得IntegrationFlow实体，配置为Spring的Bean
+                .get();
+    }
+
+    private IntegrationFlow bookIntegrationFlow() {
+        return flow -> flow.handle("bookService", "handleBookMessage");
+    }
+
+    private IntegrationFlow imageIntegrationFlow() {
+        return flow -> flow.handle("imageService", "handleImageMessage");
+    }
 }

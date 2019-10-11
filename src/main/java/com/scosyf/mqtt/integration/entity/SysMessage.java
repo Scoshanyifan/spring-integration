@@ -1,8 +1,6 @@
 package com.scosyf.mqtt.integration.entity;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @project: spring-integration
@@ -10,21 +8,6 @@ import java.util.Set;
  * @create: 2019-10-09 17:39
  **/
 public class SysMessage {
-
-    public static final String ONLINE = "clients";
-    public static final Integer ONLINE_TOPIC_LEN = 6;
-    public static final Integer CLIENTS_INDEX = new Integer(3);
-    public static final Set<String> ONLINE_TOKENS = new HashSet<>();
-    public static final String CONNECTED = "connected";
-    public static final String DISCONNECTED = "disconnected";
-    public static final String ONLINE_USERNAME = "username";
-    public static final String ONLINE_CLIENTID = "clientid";
-    public static final String ONLINE_IP= "ipaddress";
-
-    static {
-        ONLINE_TOKENS.add(CONNECTED);
-        ONLINE_TOKENS.add(DISCONNECTED);
-    }
 
     private String topic;
     private String message;

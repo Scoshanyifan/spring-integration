@@ -9,8 +9,8 @@ package com.scosyf.mqtt.integration.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
-import com.scosyf.mqtt.integration.entity.BizMessage;
+import com.scosyf.mqtt.integration.constant.Constant;
+import com.scosyf.mqtt.integration.constant.MsgTopicEnum;
 import com.scosyf.mqtt.integration.entity.SysMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,32 +32,32 @@ public class SysMessageService {
 
     public Message<String> onOffline(SysMessage sysMessage) {
         LOGGER.info(">>> onOffline, sysMessage:{}", sysMessage);
-
         JSONObject jsonMsg = JSON.parseObject(sysMessage.getMessage());
+        // scosyf/sys/+/client/+/connected
         String[] tokens = sysMessage.getTopicTokens();
         String state = tokens[tokens.length - 1];
-        String userName = jsonMsg.getString(SysMessage.ONLINE_USERNAME);
-        String clientId = jsonMsg.getString(SysMessage.ONLINE_CLIENTID);
-        String[] unTokens = userName.split(BizMessage.USERNAME_SPLIT_TOKEN);
+        String userName = jsonMsg.getString(Constant.USER_NAME);
+        String clientId = jsonMsg.getString(Constant.CLIENT_ID);
+        String[] unTokens = userName.split(Constant.NAME_SPLITTER);
         String id = unTokens[unTokens.length - 1];
-        if (BizMessage.MAC_LEN != id.length()) {
+        if (Constant.MAC_LENGTH != id.length()) {
             LOGGER.info("非wifi设备:{}", id);
             return null;
         }
         JSONObject mqttPayload = new JSONObject();
-        mqttPayload.put(BizMessage.PTN, MsgTypeEnum.SYS.name());
+        mqttPayload.put(Constant.PTN, MsgTopicEnum.SYS.name());
         switch (state) {
-            case SysMessage.CONNECTED:
-                String node = tokens[SysMessage.CLIENTS_INDEX - 1];
-                String ip = jsonMsg.getString(SysMessage.ONLINE_IP);
+            case Constant.CONNECTED:
+                String node = tokens[Constant.CLIENTS_INDEX - 1];
+                String ip = jsonMsg.getString(Constant.ONLINE_IP);
                 LOGGER.info(">>> 设备已上线, name:{}", userName);
 
-                mqttPayload.put(BizMessage.ONLINE, BizMessage.ONLINE_ON);
+                mqttPayload.put(Constant.ONLINE, Constant.ON);
                 break;
-            case SysMessage.DISCONNECTED:
+            case Constant.DISCONNECTED:
                 LOGGER.info(">>> 设备尝试离线, name:{}", userName);
                 if (true) {
-                    mqttPayload.put(BizMessage.ONLINE, BizMessage.ONLINE_OFF);
+                    mqttPayload.put(Constant.ONLINE, Constant.OFF);
 
                 } else {
                     mqttPayload = null;
@@ -70,8 +70,8 @@ public class SysMessageService {
         if (Objects.isNull(mqttPayload)) {
             return null;
         }
-        String topic = BizMessage.DEFAULT_TOPIC_PERFIX + id + BizMessage.TOPIC_SPLIT_TOKEN
-                + MsgTypeEnum.SYS.name().toLowerCase() + BizMessage.TOPIC_SPLIT_TOKEN;
+        String topic = Constant.DEFAULT_TOPIC_PERFIX + id + Constant.TOPIC_SPLITTER
+                + MsgTopicEnum.SYS.name().toLowerCase() + Constant.TOPIC_SPLITTER;
         Message<String> pubMsg = MessageBuilder.withPayload(mqttPayload.toJSONString())
                 .setHeader(MqttHeaders.TOPIC, topic)
                 .setHeader(MqttHeaders.RETAINED, Boolean.TRUE)

@@ -10,15 +10,6 @@ import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
  **/
 public class BizMessage {
 
-    public static final String PTN = "ptn";
-    public static final String DEFAULT_TOPIC_PERFIX = "rinnai/SR/01/SR/";
-    public static final String TOPIC_SPLIT_TOKEN = "/";
-    public static final String USERNAME_SPLIT_TOKEN = ":";
-    public static final String ONLINE = "online";
-    public static final String ONLINE_ON = "1";
-    public static final String ONLINE_OFF = "0";
-    public static final int MAC_LEN = 12;
-
     private String topicId;
     private MsgTypeEnum msgTypeEnum;
     private MsgTopicEnum msgTopicEnum;
@@ -45,5 +36,14 @@ public class BizMessage {
 
     public void setMsgTopicEnum(MsgTopicEnum msgTopicEnum) {
         this.msgTopicEnum = msgTopicEnum;
+    }
+
+    @Override
+    public String toString() {
+        return "BizMessage{" +
+                "topicId='" + topicId + '\'' +
+                ", msgTypeEnum=" + msgTypeEnum +
+                ", msgTopicEnum=" + msgTopicEnum +
+                '}';
     }
 }

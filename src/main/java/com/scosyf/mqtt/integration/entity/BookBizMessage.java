@@ -25,4 +25,12 @@ public class BookBizMessage extends BizMessage {
     public void setBookYear(int bookYear) {
         this.bookYear = bookYear;
     }
+
+    @Override
+    public String toString() {
+        return "BookBizMessage{" +
+                "bookName='" + bookName + '\'' +
+                ", bookYear=" + bookYear +
+                "} " + super.toString();
+    }
 }

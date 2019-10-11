@@ -23,15 +23,31 @@ public class MessageTransferUtil {
 
     /** ============== mqtt header ============= */
 
-    public static final String PREFIX                   = "mqtt_";
-    public static final String QOS                      = PREFIX + "qos";
-    public static final String RECEIVED_QOS             = PREFIX + "receivedQos";
-    public static final String DUPLICATE                = PREFIX + "duplicate";
-    public static final String RETAINED                 = PREFIX + "retained";
-    public static final String RECEIVED_RETAINED        = PREFIX + "receivedRetained";
-    public static final String TOPIC                    = PREFIX + "topic";
-    public static final String RECEIVED_TOPIC           = PREFIX + "receivedTopic";
+    public static final String QOS                      = "mqtt_qos";
+    public static final String RECEIVED_QOS             = "mqtt_receivedQos";
+    public static final String DUPLICATE                = "mqtt_duplicate";
+    public static final String RETAINED                 = "mqtt_retained";
+    public static final String RECEIVED_RETAINED        = "mqtt_receivedRetained";
+    public static final String TOPIC                    = "mqtt_topic";
+    public static final String RECEIVED_TOPIC           = "mqtt_receivedTopic";
 
+
+    /**
+     * 转换为系统消息模型
+     *
+     **/
+    public static SysMessage mqttMessage2SysMessage(String payload, Map<String, Object> headers) {
+        LOGGER.info("received sys message, header:{}, payload:{}", headers, payload);
+        // scosyf/sys/+/client/+/connected
+        String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
+        String[] topicSplit = topicStr.split(Constant.TOPIC_SPLITTER);
+
+        SysMessage sysMessage = new SysMessage();
+        sysMessage.setMessage(payload);
+        sysMessage.setTopic(topicStr);
+        sysMessage.setTopicTokens(topicSplit);
+        return sysMessage;
+    }
 
     /**
      * 原始数据转换为业务消息模型
@@ -61,27 +77,6 @@ public class MessageTransferUtil {
         return bizMessage;
     }
 
-    public static JMessage mqttMessage2JMessage(String payload, Map<String, Object> headers) {
-        log.info("received mqtt message,header:{},payload:{}", headers, payload);
-        try {
-            String topic = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
-            String[] topicSplit = topic.split(JMessage.TOPIC_SPLIT_TOKEN);
-            int topicLen = topicSplit.length;
-            String topicType = topicSplit[topicLen - 1].toLowerCase();
-            String topicId = topicSplit[topicLen - 2];
-            RinnaiTopicTypeEnum topicTypeEnum = RinnaiTopicTypeEnum.valueOf(topicType.toUpperCase());
-            JMessage jMessage = payload2Pojo(payload);
-            jMessage.setTopicType(topicTypeEnum);
-            jMessage.setTopicId(topicId);
-            return jMessage;
-        } catch (Exception e) {
-            log.error("非法的topic类型或payload内容", e);
-            JMessage jMessage = new JMessage();
-            jMessage.setMessageType(RinnaiMsgTypeEnum.JNA);
-            return jMessage;
-        }
-    }
-
     private static BizMessage payload2BizMessage(String payload) {
         JSONObject payloadJson = JSON.parseObject(payload);
         String type = payloadJson.getString(Constant.PAYLOAD_MSG_TYPE).toUpperCase();
@@ -108,22 +103,6 @@ public class MessageTransferUtil {
         return bizMessage;
     }
 
-    /**
-     * 转换为系统消息模型
-     *
-     **/
-    public static SysMessage mqttMessage2SysMessage(String payload, Map<String, Object> headers) {
-        LOGGER.info("received sys message, header:{}, payload:{}", headers, payload);
-        // scosyf/sys/+/client/+/connected
-        String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
-        String[] topicSplit = topicStr.split(Constant.TOPIC_SPLITTER);
-
-        SysMessage sysMessage = new SysMessage();
-        sysMessage.setMessage(payload);
-        sysMessage.setTopic(topicStr);
-        sysMessage.setTopicTokens(topicSplit);
-        return sysMessage;
-    }
 
 
 }
