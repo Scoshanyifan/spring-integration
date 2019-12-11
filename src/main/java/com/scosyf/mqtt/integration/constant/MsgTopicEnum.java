@@ -9,7 +9,7 @@ public enum MsgTopicEnum {
     //
 
     SYS,
-    BASE,
+    BSC,
     INF,
     LOG,
 

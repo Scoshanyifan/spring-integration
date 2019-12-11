@@ -27,6 +27,8 @@ import org.springframework.messaging.MessageHandler;
 import java.util.Objects;
 
 /**
+ * 集成spring-integration的mqtt消息处理器
+ *
  * https://docs.spring.io/spring-integration/reference/html/mqtt.html#mqtt
  *
  * @project: spring-integration
@@ -34,15 +36,15 @@ import java.util.Objects;
  * @create: 2019-10-09 10:21
  **/
 @Configuration
-public class MqttIntegration {
+public class MqttSpringIntegration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MqttIntegration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MqttSpringIntegration.class);
 
     @Autowired
     private MqttConfig mqttConfig;
 
     /**
-     * 用于生产 mqtt 客户端
+     * mqtt factory
      *
      **/
     @Bean
@@ -50,7 +52,7 @@ public class MqttIntegration {
         LOGGER.info(">>> mqttConfig:{}", JSONObject.toJSONString(mqttConfig));
 
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setServerURIs(new String[]{mqttConfig.getUrl()});
+        options.setServerURIs(new String[]{mqttConfig.getHost()});
         options.setUserName(mqttConfig.getUserName());
         options.setPassword(mqttConfig.getPassword().toCharArray());
 
@@ -66,13 +68,15 @@ public class MqttIntegration {
     @Bean
     public MessageProducerSupport sysMsgInBound() {
 
-        MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(mqttConfig.getSysClientId(), mqttClientFactory(), mqttConfig.getSysTopic());
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+                mqttConfig.getSysClientId(),
+                mqttClientFactory(),
+                mqttConfig.getSysTopic());
 
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setOutputChannel(new DirectChannel());
         adapter.setCompletionTimeout(Constant.DEFAULT_COMPLETION_TIMEOUT);
-        adapter.setQos(Constant.DEFAULT_QOS);
+        adapter.setQos(Constant.QOS_DEFAULT);
         return adapter;
     }
 
@@ -89,7 +93,7 @@ public class MqttIntegration {
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setOutputChannel(new DirectChannel());
         adapter.setCompletionTimeout(Constant.DEFAULT_COMPLETION_TIMEOUT);
-        adapter.setQos(Constant.DEFAULT_QOS);
+        adapter.setQos(Constant.QOS_DEFAULT);
         return adapter;
     }
 
@@ -100,7 +104,7 @@ public class MqttIntegration {
     @Bean
     public MessageHandler msgOutbound() {
         MqttPahoMessageHandler messageHandler =
-                new MqttPahoMessageHandler(mqttConfig.getPublisherId(), mqttClientFactory());
+                new MqttPahoMessageHandler(mqttConfig.getClientId(), mqttClientFactory());
         messageHandler.setAsync(true);
         return messageHandler;
     }

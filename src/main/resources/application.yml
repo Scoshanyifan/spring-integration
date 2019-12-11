@@ -2,19 +2,24 @@ server:
   port: 9090
 
 mqtt:
-  url: tcp://127.0.0.1:1883
-  username: s:scosyf:mqtt
+  # 客户端信息
+  host: tcp://127.0.0.1:1883
+  username: mqtt-kunbu
   password: 123456
-  publisherid: consumer-publisher
-
+  cleansession: false
+  # 消息发布
+  clientid: consumer-publisher
+  # 业务消息订阅
   bizclientid: consumer-biz-subscriber
-  biztopic: #    rinnai/SR/01/SR/F0FE6BAE428E/res/
-  - scosyf/biz/+/base/
-  - scosyf/biz/+/log/
-  - scosyf/biz/+/inf/
-
+  biztopic:
+  # rinnai/SR/01/SR/F0FE6BAE428E/res/
+  - kunbu/biz/+/bsc/
+  - kunbu/biz/+/log/
+  - kunbu/biz/+/inf/
+  # 系统消息订阅，topic参考 https://github.com/mqtt/mqtt.github.io/wiki/SYS-Topics
   sysclientid: consumer-sys-subscriber
-  systopic: #   $SYS/brokers/emqttd-linnei@10.45.33.195/clients/a:rinnai:SR:01:SR:186582626671565159163590/connected
-  - scosyf/sys/+/client/+/connected
-  - scosyf/sys/+/client/+/disconnected
+  systopic:
+  # $SYS/brokers/emqttd-linnei@10.45.33.195/clients/a:rinnai:SR:01:SR:186582626671565159163590/connected
+  - $SYS/brokers/+/client/+/connected
+  - $SYS/brokers/+/client/+/disconnected
 

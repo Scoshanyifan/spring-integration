@@ -13,9 +13,10 @@ import org.springframework.stereotype.Component;
 public class MqttConfig {
 
     private String password;
-    private String url;
+    private String host;
     private String userName;
-    private String publisherId;
+    private String clientId;
+    private Boolean cleanSession;
 
     private String sysClientId;
     private String[] sysTopic;
@@ -31,14 +32,6 @@ public class MqttConfig {
         this.password = password;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getUserName() {
         return userName;
     }
@@ -47,12 +40,28 @@ public class MqttConfig {
         this.userName = userName;
     }
 
-    public String getPublisherId() {
-        return publisherId;
+    public String getHost() {
+        return host;
     }
 
-    public void setPublisherId(String publisherId) {
-        this.publisherId = publisherId;
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public Boolean getCleanSession() {
+        return cleanSession;
+    }
+
+    public void setCleanSession(Boolean cleanSession) {
+        this.cleanSession = cleanSession;
     }
 
     public String getSysClientId() {

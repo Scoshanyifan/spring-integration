@@ -19,7 +19,9 @@ public interface Constant {
 
     long DEFAULT_COMPLETION_TIMEOUT         = 5000;
 
-    int DEFAULT_QOS                         = 1;
+    int QOS_DEFAULT                         = 1;
+    int QOS_0                               = 0;
+    int QOS_2                               = 2;
 
 
     String CONNECTED                        = "connected";
