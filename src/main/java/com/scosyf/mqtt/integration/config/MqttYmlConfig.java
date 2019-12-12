@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 @ConfigurationProperties(prefix = "mqtt")
-public class MqttConfig {
+public class MqttYmlConfig {
 
     private String password;
     private String host;

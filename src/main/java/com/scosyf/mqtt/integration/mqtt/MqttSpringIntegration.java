@@ -1,7 +1,7 @@
 package com.scosyf.mqtt.integration.mqtt;
 
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.config.MqttConfig;
+import com.scosyf.mqtt.integration.config.MqttYmlConfig;
 import com.scosyf.mqtt.integration.constant.Constant;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
 import com.scosyf.mqtt.integration.entity.BizMessage;
@@ -29,7 +29,9 @@ import java.util.Objects;
 /**
  * 集成spring-integration的mqtt消息处理器
  *
- * https://docs.spring.io/spring-integration/reference/html/mqtt.html#mqtt
+ * https://docs.spring.io/spring-integration/reference/html/mqtt.html
+ *
+ * https://github.com/spring-projects/spring-integration-samples/blob/master/basic/mqtt/src/main/java/org/springframework/integration/samples/mqtt/Application.java
  *
  * @project: spring-integration
  * @author: kunbu
@@ -41,7 +43,7 @@ public class MqttSpringIntegration {
     private static final Logger LOGGER = LoggerFactory.getLogger(MqttSpringIntegration.class);
 
     @Autowired
-    private MqttConfig mqttConfig;
+    private MqttYmlConfig mqttYmlConfig;
 
     /**
      * mqtt factory
@@ -49,12 +51,12 @@ public class MqttSpringIntegration {
      **/
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
-        LOGGER.info(">>> mqttConfig:{}", JSONObject.toJSONString(mqttConfig));
+        LOGGER.info(">>> mqttConfig:{}", JSONObject.toJSONString(mqttYmlConfig));
 
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setServerURIs(new String[]{mqttConfig.getHost()});
-        options.setUserName(mqttConfig.getUserName());
-        options.setPassword(mqttConfig.getPassword().toCharArray());
+        options.setServerURIs(new String[]{mqttYmlConfig.getHost()});
+        options.setUserName(mqttYmlConfig.getUserName());
+        options.setPassword(mqttYmlConfig.getPassword().toCharArray());
 
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
         factory.setConnectionOptions(options);
@@ -69,9 +71,9 @@ public class MqttSpringIntegration {
     public MessageProducerSupport sysMsgInBound() {
 
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
-                mqttConfig.getSysClientId(),
+                mqttYmlConfig.getSysClientId(),
                 mqttClientFactory(),
-                mqttConfig.getSysTopic());
+                mqttYmlConfig.getSysTopic());
 
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setOutputChannel(new DirectChannel());
@@ -87,8 +89,10 @@ public class MqttSpringIntegration {
     @Bean
     public MessageProducerSupport bizMsgInBound() {
 
-        MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(mqttConfig.getBizClientId(), mqttClientFactory(), mqttConfig.getBizTopic());
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+                mqttYmlConfig.getBizClientId(),
+                mqttClientFactory(),
+                mqttYmlConfig.getBizTopic());
 
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setOutputChannel(new DirectChannel());
@@ -103,8 +107,10 @@ public class MqttSpringIntegration {
      **/
     @Bean
     public MessageHandler msgOutbound() {
-        MqttPahoMessageHandler messageHandler =
-                new MqttPahoMessageHandler(mqttConfig.getClientId(), mqttClientFactory());
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(
+                mqttYmlConfig.getClientId(),
+                mqttClientFactory());
+
         messageHandler.setAsync(true);
         return messageHandler;
     }
@@ -152,10 +158,12 @@ public class MqttSpringIntegration {
     }
 
     private IntegrationFlow bookIntegrationFlow() {
+
         return flow -> flow.handle("bookService", "handleBookMessage");
     }
 
     private IntegrationFlow imageIntegrationFlow() {
+
         return flow -> flow.handle("imageService", "handleImageMessage");
     }
 }

@@ -23,6 +23,8 @@ public interface Constant {
     int QOS_0                               = 0;
     int QOS_2                               = 2;
 
+    String CHARSET_DEFAULT                  = "utf-8";
+
 
     String CONNECTED                        = "connected";
     String DISCONNECTED                     = "disconnected";
