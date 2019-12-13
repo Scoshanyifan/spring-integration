@@ -16,6 +16,7 @@ public class MqttTest {
 
         JSONObject cmd = new JSONObject();
         cmd.put("cmd", "2333");
+
         MqttHandler.getInstance().push("kunbu/biz/scosyf/inf/", cmd.toJSONString());
 
     }

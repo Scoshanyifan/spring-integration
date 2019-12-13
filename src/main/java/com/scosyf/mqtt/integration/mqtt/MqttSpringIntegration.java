@@ -29,8 +29,10 @@ import java.util.Objects;
 /**
  * 集成spring-integration的mqtt消息处理器
  *
+ * mqtt:
  * https://docs.spring.io/spring-integration/reference/html/mqtt.html
  *
+ * demo：
  * https://github.com/spring-projects/spring-integration-samples/blob/master/basic/mqtt/src/main/java/org/springframework/integration/samples/mqtt/Application.java
  *
  * @project: spring-integration
