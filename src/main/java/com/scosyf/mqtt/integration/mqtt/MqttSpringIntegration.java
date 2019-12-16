@@ -1,18 +1,16 @@
 package com.scosyf.mqtt.integration.mqtt;
 
-import com.alibaba.fastjson.JSONObject;
 import com.scosyf.mqtt.integration.config.MqttYmlConfig;
-import com.scosyf.mqtt.integration.constant.Constant;
+import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
 import com.scosyf.mqtt.integration.entity.BizMessage;
 import com.scosyf.mqtt.integration.utils.ExecutorFactoryUtil;
 import com.scosyf.mqtt.integration.utils.MessageTransferUtil;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
@@ -22,6 +20,7 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
 import java.util.Objects;
@@ -35,116 +34,139 @@ import java.util.Objects;
  * demo：
  * https://github.com/spring-projects/spring-integration-samples/blob/master/basic/mqtt/src/main/java/org/springframework/integration/samples/mqtt/Application.java
  *
- * @project: spring-integration
- * @author: kunbu
- * @create: 2019-10-09 10:21
+ * 参考：
+ * https://segmentfault.com/a/1190000017811919?utm_source=tag-newest
+ * https://segmentfault.com/a/1190000015601875?utm_source=tag-newest
+ * https://www.cnblogs.com/oldwangneverdie/p/9015880.html
+ * https://my.oschina.net/NeedLoser/blog/803404
+ *
+ * @author kunbu
+ * @date 2019/12/16
  **/
 @Configuration
 public class MqttSpringIntegration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MqttSpringIntegration.class);
-
     @Autowired
     private MqttYmlConfig mqttYmlConfig;
 
-    /**
-     * mqtt factory
-     *
-     **/
-    @Bean
-    public MqttPahoClientFactory mqttClientFactory() {
-        LOGGER.info(">>> mqttConfig:{}", JSONObject.toJSONString(mqttYmlConfig));
+    /** ------------------------------- 配置及工厂 ----------------------------- */
 
+    @Bean
+    public MqttConnectOptions mqttConnectOptions() {
         MqttConnectOptions options = new MqttConnectOptions();
+        //基础信息
         options.setServerURIs(new String[]{mqttYmlConfig.getHost()});
         options.setUserName(mqttYmlConfig.getUserName());
         options.setPassword(mqttYmlConfig.getPassword().toCharArray());
+        // 设置超时时间
+        options.setConnectionTimeout(MqttConstant.DEFAULT_CONNECTION_TIMEOUT);
+        // 设置心跳：1.5*20秒
+        options.setKeepAliveInterval(20);
+        // 设置最大并发数
+        options.setMaxInflight(10);
+        // 设置自动重连
+        options.setAutomaticReconnect(false);
+        // 设置是否清除session（如果不清除，clientId不变的情况下会保存身份信息和离线消息）
+        options.setCleanSession(false);
 
+        // 设置遗嘱
+//        options.setWill();
+        // 设置ssl
+//        options.setSSLProperties();
+
+        return options;
+    }
+
+    @Bean
+    public MqttPahoClientFactory mqttClientFactory() {
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
-        factory.setConnectionOptions(options);
+        factory.setConnectionOptions(mqttConnectOptions());
         return factory;
     }
 
-    /**
-     * 系统消息订阅
-     *
-     **/
+    /** ------------------------------- 发布者 ----------------------------- */
+
     @Bean
-    public MessageProducerSupport sysMsgInBound() {
-
-        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
-                mqttYmlConfig.getSysClientId(),
-                mqttClientFactory(),
-                mqttYmlConfig.getSysTopic());
-
-        adapter.setConverter(new DefaultPahoMessageConverter());
-        adapter.setOutputChannel(new DirectChannel());
-        adapter.setCompletionTimeout(Constant.DEFAULT_COMPLETION_TIMEOUT);
-        adapter.setQos(Constant.QOS_DEFAULT);
-        return adapter;
+    public MessageChannel mqttOutboundChannel() {
+        return new DirectChannel();
     }
 
-    /**
-     * 业务消息订阅
-     *
-     **/
     @Bean
-    public MessageProducerSupport bizMsgInBound() {
-
-        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
-                mqttYmlConfig.getBizClientId(),
-                mqttClientFactory(),
-                mqttYmlConfig.getBizTopic());
-
-        adapter.setConverter(new DefaultPahoMessageConverter());
-        adapter.setOutputChannel(new DirectChannel());
-        adapter.setCompletionTimeout(Constant.DEFAULT_COMPLETION_TIMEOUT);
-        adapter.setQos(Constant.QOS_DEFAULT);
-        return adapter;
-    }
-
-    /**
-     * 消息送出
-     *
-     **/
-    @Bean
-    public MessageHandler msgOutbound() {
+    @ServiceActivator(inputChannel = "mqttOutboundChannel")
+    public MessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(
                 mqttYmlConfig.getClientId(),
-                mqttClientFactory());
+                mqttClientFactory()
+        );
 
         messageHandler.setAsync(true);
         return messageHandler;
     }
 
+    /** ------------------------------- 订阅者 ----------------------------- */
 
-    /** ======================================== 消息处理 ======================================== */
+    @Bean
+    public MessageChannel mqttInboundChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    public MessageProducerSupport sysInbound() {
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+                mqttYmlConfig.getSysClientId(),
+                mqttClientFactory(),
+                mqttYmlConfig.getSysTopic()
+        );
+        // 设置订阅通道
+        adapter.setOutputChannel(mqttInboundChannel());
+        adapter.setCompletionTimeout(MqttConstant.DEFAULT_COMPLETION_TIMEOUT);
+        adapter.setConverter(new DefaultPahoMessageConverter());
+        adapter.setQos(MqttConstant.QOS_DEFAULT);
+        return adapter;
+    }
+
+    @Bean
+    public MessageProducerSupport bizInbound() {
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+                mqttYmlConfig.getBizClientId(),
+                mqttClientFactory(),
+                mqttYmlConfig.getBizTopic()
+        );
+
+        adapter.setOutputChannel(mqttInboundChannel());
+        adapter.setCompletionTimeout(MqttConstant.DEFAULT_COMPLETION_TIMEOUT);
+        adapter.setConverter(new DefaultPahoMessageConverter());
+        adapter.setQos(MqttConstant.QOS_DEFAULT);
+        return adapter;
+    }
+
+    /** ============================ 业务处理 ============================== */
 
     /**
-     * 系统消息处理
+     * 系统消息处理 consumer
      *
      **/
     @Bean
     public IntegrationFlow sysMsgFlow() {
-        return IntegrationFlows.from(sysMsgInBound())
+        return IntegrationFlows.from(sysInbound())
                 .channel(c -> c.executor(ExecutorFactoryUtil.buildSysExecutor()))
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
 //                .filter(SysMessage.class, MessageTransformer::sysOnlineFilter)
                 .handle("sysMsgService", "onOffline")
                 .filter(Objects::nonNull)
-                .handle(msgOutbound())
+                .handle(mqttOutbound())
                 .get();
     }
 
     /**
-     * 业务消息处理
+     * 业务消息处理 consumer
      *
      **/
     @Bean
     public IntegrationFlow bizMsgFlow() {
         return IntegrationFlows
                 // 消息来源
-                .from(bizMsgInBound())
+                .from(bizInbound())
                 // 分配通道
                 .channel(c -> c.executor(ExecutorFactoryUtil.buildBizExecutor()))
                 // 消息转换成业务使用
@@ -168,4 +190,5 @@ public class MqttSpringIntegration {
 
         return flow -> flow.handle("imageService", "handleImageMessage");
     }
+
 }

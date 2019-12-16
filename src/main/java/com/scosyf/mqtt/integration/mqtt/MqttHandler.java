@@ -1,7 +1,7 @@
 package com.scosyf.mqtt.integration.mqtt;
 
 import com.scosyf.mqtt.integration.config.MqttPropertyConfig;
-import com.scosyf.mqtt.integration.constant.Constant;
+import com.scosyf.mqtt.integration.constant.MqttConstant;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class MqttHandler implements IMqttPublisher {
 
     @Override
     public void push(String topic, String msg) {
-        push(Constant.QOS_DEFAULT, false, topic, msg);
+        push(MqttConstant.QOS_DEFAULT, false, topic, msg);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class MqttHandler implements IMqttPublisher {
             MqttMessage message = new MqttMessage();
             message.setQos(qos);
             message.setRetained(retained);
-            message.setPayload(msg.getBytes(Constant.CHARSET_DEFAULT));
+            message.setPayload(msg.getBytes(MqttConstant.CHARSET_DEFAULT));
             mqttClient.publish(topic, message);
         } catch (Exception e) {
             LOGGER.error(">>> IMqttHandler push error", e);

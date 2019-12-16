@@ -9,7 +9,7 @@ package com.scosyf.mqtt.integration.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.constant.Constant;
+import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.constant.MsgTopicEnum;
 import com.scosyf.mqtt.integration.entity.SysMessage;
 import org.slf4j.Logger;
@@ -36,28 +36,28 @@ public class SysMessageService {
         // scosyf/sys/+/client/+/connected
         String[] tokens = sysMessage.getTopicTokens();
         String state = tokens[tokens.length - 1];
-        String userName = jsonMsg.getString(Constant.USER_NAME);
-        String clientId = jsonMsg.getString(Constant.CLIENT_ID);
-        String[] unTokens = userName.split(Constant.NAME_SPLITTER);
+        String userName = jsonMsg.getString(MqttConstant.USER_NAME);
+        String clientId = jsonMsg.getString(MqttConstant.CLIENT_ID);
+        String[] unTokens = userName.split(MqttConstant.NAME_SPLITTER);
         String id = unTokens[unTokens.length - 1];
-        if (Constant.MAC_LENGTH != id.length()) {
+        if (MqttConstant.MAC_LENGTH != id.length()) {
             LOGGER.info("非wifi设备:{}", id);
             return null;
         }
         JSONObject mqttPayload = new JSONObject();
-        mqttPayload.put(Constant.PTN, MsgTopicEnum.SYS.name());
+        mqttPayload.put(MqttConstant.PTN, MsgTopicEnum.SYS.name());
         switch (state) {
-            case Constant.CONNECTED:
-                String node = tokens[Constant.CLIENTS_INDEX - 1];
-                String ip = jsonMsg.getString(Constant.ONLINE_IP);
+            case MqttConstant.CONNECTED:
+                String node = tokens[MqttConstant.CLIENTS_INDEX - 1];
+                String ip = jsonMsg.getString(MqttConstant.ONLINE_IP);
                 LOGGER.info(">>> 设备已上线, name:{}", userName);
 
-                mqttPayload.put(Constant.ONLINE, Constant.ON);
+                mqttPayload.put(MqttConstant.ONLINE, MqttConstant.ON);
                 break;
-            case Constant.DISCONNECTED:
+            case MqttConstant.DISCONNECTED:
                 LOGGER.info(">>> 设备尝试离线, name:{}", userName);
                 if (true) {
-                    mqttPayload.put(Constant.ONLINE, Constant.OFF);
+                    mqttPayload.put(MqttConstant.ONLINE, MqttConstant.OFF);
 
                 } else {
                     mqttPayload = null;
@@ -70,8 +70,8 @@ public class SysMessageService {
         if (Objects.isNull(mqttPayload)) {
             return null;
         }
-        String topic = Constant.DEFAULT_TOPIC_PERFIX + id + Constant.TOPIC_SPLITTER
-                + MsgTopicEnum.SYS.name().toLowerCase() + Constant.TOPIC_SPLITTER;
+        String topic = MqttConstant.DEFAULT_TOPIC_PERFIX + id + MqttConstant.TOPIC_SPLITTER
+                + MsgTopicEnum.SYS.name().toLowerCase() + MqttConstant.TOPIC_SPLITTER;
         Message<String> pubMsg = MessageBuilder.withPayload(mqttPayload.toJSONString())
                 .setHeader(MqttHeaders.TOPIC, topic)
                 .setHeader(MqttHeaders.RETAINED, Boolean.TRUE)

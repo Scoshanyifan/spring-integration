@@ -5,7 +5,7 @@ package com.scosyf.mqtt.integration.constant;
  * @time: 2019/10/9 17:45
  * @description:
  */
-public interface Constant {
+public interface MqttConstant {
     
     int MAC_LENGTH                          = 12;
     
@@ -17,6 +17,7 @@ public interface Constant {
 
     Integer DEFAULT_THREAD_NUM              = Runtime.getRuntime().availableProcessors();
 
+    int DEFAULT_CONNECTION_TIMEOUT          = 5000;
     long DEFAULT_COMPLETION_TIMEOUT         = 5000;
 
     int QOS_DEFAULT                         = 1;

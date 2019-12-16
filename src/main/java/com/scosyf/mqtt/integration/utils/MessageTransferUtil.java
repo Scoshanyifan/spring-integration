@@ -2,7 +2,7 @@ package com.scosyf.mqtt.integration.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.constant.Constant;
+import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.constant.MsgTopicEnum;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
 import com.scosyf.mqtt.integration.entity.*;
@@ -40,7 +40,7 @@ public class MessageTransferUtil {
         LOGGER.info("received sys message, header:{}, payload:{}", headers, payload);
         // scosyf/sys/+/client/+/connected
         String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
-        String[] topicSplit = topicStr.split(Constant.TOPIC_SPLITTER);
+        String[] topicSplit = topicStr.split(MqttConstant.TOPIC_SPLITTER);
 
         SysMessage sysMessage = new SysMessage();
         sysMessage.setMessage(payload);
@@ -59,7 +59,7 @@ public class MessageTransferUtil {
         try {
             // scosyf/biz/+/base/
             String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
-            String[] topicArr = topicStr.split(Constant.TOPIC_SPLITTER);
+            String[] topicArr = topicStr.split(MqttConstant.TOPIC_SPLITTER);
             int topicLength = topicArr.length;
             // + 为通配符
             String topicId = topicArr[topicLength - 2];
@@ -79,7 +79,7 @@ public class MessageTransferUtil {
 
     private static BizMessage payload2BizMessage(String payload) {
         JSONObject payloadJson = JSON.parseObject(payload);
-        String type = payloadJson.getString(Constant.PAYLOAD_MSG_TYPE).toUpperCase();
+        String type = payloadJson.getString(MqttConstant.PAYLOAD_MSG_TYPE).toUpperCase();
         MsgTypeEnum msgType = MsgTypeEnum.valueOf(type);
         BizMessage bizMessage;
         switch (msgType) {

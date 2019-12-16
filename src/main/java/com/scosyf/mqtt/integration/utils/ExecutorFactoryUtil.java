@@ -1,7 +1,7 @@
 package com.scosyf.mqtt.integration.utils;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.scosyf.mqtt.integration.constant.Constant;
+import com.scosyf.mqtt.integration.constant.MqttConstant;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
  **/
 public class ExecutorFactoryUtil {
 
-    private static final Integer THREAD_NUM_SYS = Constant.DEFAULT_THREAD_NUM;
+    private static final Integer THREAD_NUM_SYS = MqttConstant.DEFAULT_THREAD_NUM;
 
-    private static final Integer THREAD_NUM_BIZ = Constant.DEFAULT_THREAD_NUM * 2;
+    private static final Integer THREAD_NUM_BIZ = MqttConstant.DEFAULT_THREAD_NUM * 2;
 
     public static Executor buildSysExecutor() {
         return new ThreadPoolExecutor(
