@@ -30,8 +30,10 @@ import java.util.Objects;
  *
  * mqtt:
  * https://docs.spring.io/spring-integration/reference/html/mqtt.html
+ * https://docs.spring.io/spring-integration/docs/current/reference/html/dsl.html#java-dsl
  *
  * demo：
+ * https://github.com/spring-projects/spring-integration-java-dsl/wiki/Spring-Integration-Java-DSL-Reference
  * https://github.com/spring-projects/spring-integration-samples/blob/master/basic/mqtt/src/main/java/org/springframework/integration/samples/mqtt/Application.java
  *
  * 参考：
@@ -145,16 +147,25 @@ public class MqttSpringIntegration {
     /**
      * 系统消息处理 consumer
      *
+     * Spring Integration Java DSL ：
+     * IntegrationFlows和IntegrationFlowBuilder来实现使用Fluent API来定义流程
+     *
      **/
     @Bean
     public IntegrationFlow sysMsgFlow() {
-        return IntegrationFlows.from(sysInbound())
+        return IntegrationFlows
+                // 从channel input获取消息
+                .from(sysInbound())
+                // 分配通道
                 .channel(c -> c.executor(ExecutorFactoryUtil.buildSysExecutor()))
+                // 消息转换成业务模型
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
 //                .filter(SysMessage.class, MessageTransformer::sysOnlineFilter)
                 .handle("sysMsgService", "onOffline")
                 .filter(Objects::nonNull)
+                // 如果有消息返回，则输出
                 .handle(mqttOutbound())
+                // 获取集成流程并注册为Bean
                 .get();
     }
 
@@ -174,6 +185,7 @@ public class MqttSpringIntegration {
                 // 通过route来选择路由，按照msgType分配，走不同的消息处理
                 .<BizMessage, MsgTypeEnum>route(BizMessage::getMsgTypeEnum,
                         mapping -> mapping
+//                                .channelMapping(MsgTypeEnum.MUSIC, "channel")
                                 .subFlowMapping(MsgTypeEnum.BOOK, bookIntegrationFlow())
                                 .subFlowMapping(MsgTypeEnum.IMAGE, imageIntegrationFlow())
                 )
