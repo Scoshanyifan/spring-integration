@@ -5,5 +5,5 @@ package com.scosyf.mqtt.integration.common.message;
  * @author: kunbu
  * @create: 2019-10-10 16:36
  **/
-public class MusicBizMessage extends BizMessage {
+public class JERMessage extends BizMessage {
 }

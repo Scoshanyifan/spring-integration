@@ -1,5 +1,7 @@
 package com.scosyf.mqtt.integration.mqtt;
 
+import com.scosyf.mqtt.integration.common.message.J00Message;
+import com.scosyf.mqtt.integration.common.message.SysMessage;
 import com.scosyf.mqtt.integration.config.MqttYmlConfig;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
@@ -160,10 +162,13 @@ public class MqttSpringIntegration {
                 .channel(c -> c.executor(ExecutorFactoryUtil.buildSysExecutor()))
                 // 消息转换成业务模型
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
-//                .filter(SysMessage.class, MessageTransformer::sysOnlineFilter)
+                // 目前只处理上下线消息
+                .filter(SysMessage.class, MessageTransferUtil::filterSysMessageOnOff)
+                // 过滤后的上下线消息进行记录处理
                 .handle("sysMsgService", "onOffline")
+                // 处理结果如果不为空，说明有消息
                 .filter(Objects::nonNull)
-                // 如果有消息返回，则输出
+                // 如果有消息返回输出
                 .handle(mqttOutbound())
                 // 获取集成流程并注册为Bean
                 .get();
@@ -183,24 +188,27 @@ public class MqttSpringIntegration {
                 // 消息转换成业务使用
                 .handle(MessageTransferUtil::mqttMessage2BizMessage)
                 // 通过route来选择路由，按照msgType分配，走不同的消息处理
-                .<BizMessage, MsgTypeEnum>route(BizMessage::getMsgTypeEnum,
+                .<BizMessage, MsgTypeEnum>route(
+                        BizMessage::getMsgTypeEnum,
                         mapping -> mapping
-//                                .channelMapping(MsgTypeEnum.MUSIC, "channel")
-                                .subFlowMapping(MsgTypeEnum.BOOK, bookIntegrationFlow())
-                                .subFlowMapping(MsgTypeEnum.IMAGE, imageIntegrationFlow())
+//                                .channelMapping(MsgTypeEnum.JER, "channel")
+                                .subFlowMapping(MsgTypeEnum.J00, J00IntegrationFlow())
+                                .subFlowMapping(MsgTypeEnum.J05, JERIntegrationFlow())
+                                .subFlowMapping(MsgTypeEnum.NA, errorFlow())
                 )
                 // 获得IntegrationFlow实体，配置为Spring的Bean
                 .get();
     }
 
-    private IntegrationFlow bookIntegrationFlow() {
-
-        return flow -> flow.handle("bookService", "handleBookMessage");
+    private IntegrationFlow J00IntegrationFlow() {
+        return null;
     }
 
-    private IntegrationFlow imageIntegrationFlow() {
-
-        return flow -> flow.handle("bookService", "handleBookMessage");
+    private IntegrationFlow JERIntegrationFlow() {
+        return flow -> flow.handle("jerService", "handleError");
     }
 
+    private IntegrationFlow errorFlow() {
+        return null;
+    }
 }

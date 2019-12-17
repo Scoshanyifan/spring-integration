@@ -39,15 +39,36 @@ public class MessageTransferUtil {
      **/
     public static SysMessage mqttMessage2SysMessage(String payload, Map<String, Object> headers) {
         LOGGER.info("received sys message, header:{}, payload:{}", headers, payload);
-        // $SYS/brokers/+/clients/+/connected
-        String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
-        String[] topicSplit = topicStr.split(MqttConstant.TOPIC_SPLITTER);
+        try {
+            // $SYS/brokers/+/clients/+/connected
+            String topic = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
+            String[] topicItems = topic.split(MqttConstant.TOPIC_SPLITTER);
 
-        SysMessage sysMessage = new SysMessage();
-        sysMessage.setMessage(payload);
-        sysMessage.setTopic(topicStr);
-        sysMessage.setTopicTokens(topicSplit);
-        return sysMessage;
+            SysMessage sysMessage = new SysMessage();
+            sysMessage.setPayload(payload);
+            sysMessage.setTopic(topic);
+            sysMessage.setTopicItems(topicItems);
+            return sysMessage;
+        } catch (Exception e) {
+            LOGGER.error(">>> mqttMessage2SysMessage 系统消息转换异常", e);
+            return null;
+        }
+    }
+
+    /**
+     * 过滤上下线消息
+     * @param sysMessage
+     * @return
+     */
+    public static Boolean filterSysMessageOnOff(SysMessage sysMessage) {
+        if (sysMessage == null) {
+            return Boolean.FALSE;
+        }
+        String onOff = sysMessage.getTopicItems()[sysMessage.getTopicItems().length - 1];
+        if (MqttConstant.DISCONNECTED.equals(onOff) || MqttConstant.CONNECTED.equals(onOff)) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     /**
@@ -58,7 +79,7 @@ public class MessageTransferUtil {
         LOGGER.info("received biz message, header:{}, payload:{}", headers, payload);
         BizMessage bizMessage;
         try {
-            //拆分topic（+为通配符）：kunbu/biz/+/inf/
+            //kunbu/biz/+/inf/
             String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
             String[] topicArr = topicStr.split(MqttConstant.TOPIC_SPLITTER);
             int topicLength = topicArr.length;
@@ -72,27 +93,28 @@ public class MessageTransferUtil {
         } catch (Exception e) {
             LOGGER.error(">>> mqttMessage2BizMessage 转业务数据失败.", e);
             bizMessage = new BizMessage();
+            bizMessage.setMsgTypeEnum(MsgTypeEnum.NA);
         }
         return bizMessage;
     }
 
     private static BizMessage payload2BizMessage(String payload) {
         JSONObject payloadJson = JSON.parseObject(payload);
-        String mt = payloadJson.getString(BizMessage.PAYLOAD_MSG_TYPE).toUpperCase();
+        String mt = payloadJson.getString(MqttConstant.PAYLOAD_MSG_TYPE).toUpperCase();
         MsgTypeEnum msgTypeEnum = MsgTypeEnum.getMsgType(mt);
         BizMessage bizMessage;
         switch (msgTypeEnum) {
-            case BOOK:
-                bizMessage = payloadJson.toJavaObject(BookBizMessage.class);
+            case J00:
+                bizMessage = payloadJson.toJavaObject(J00Message.class);
                 break;
-            case IMAGE:
-                bizMessage = payloadJson.toJavaObject(ImageBizMessage.class);
+            case J02:
+                bizMessage = payloadJson.toJavaObject(J02Message.class);
                 break;
-            case MUSIC:
-                bizMessage = payloadJson.toJavaObject(MusicBizMessage.class);
+            case J05:
+                bizMessage = payloadJson.toJavaObject(J05Message.class);
                 break;
-            case MOVIE:
-                bizMessage = payloadJson.toJavaObject(MovieBizMessage.class);
+            case JER:
+                bizMessage = payloadJson.toJavaObject(JERMessage.class);
                 break;
             default:
                 bizMessage = payloadJson.toJavaObject(BizMessage.class);

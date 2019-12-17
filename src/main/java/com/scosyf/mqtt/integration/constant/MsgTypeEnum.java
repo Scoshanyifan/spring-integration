@@ -8,11 +8,15 @@ package com.scosyf.mqtt.integration.constant;
 public enum MsgTypeEnum {
     //
 
-    BOOK,
-    MOVIE,
-    IMAGE,
-    MUSIC,
+    J00,
+    J02,
+    J05,
+    // 错误信息
+    JER,
 
+    BK,
+
+    NA,
     ;
 
     public static MsgTypeEnum getMsgType(String name) {

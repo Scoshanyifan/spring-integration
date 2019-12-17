@@ -8,7 +8,6 @@ package com.scosyf.mqtt.integration.constant;
 public enum TopicTypeEnum {
     //
 
-    SYS,
     BSC,
     INF,
     LOG,

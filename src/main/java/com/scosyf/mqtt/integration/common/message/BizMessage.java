@@ -10,9 +10,6 @@ import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
  **/
 public class BizMessage {
 
-    public static final String PAYLOAD_MSG_TYPE     = "mt";
-    public static final String PAYLOAD_TIMESTAMP    = "ts";
-
     /** =========================== 通用原始数据 ===========================*/
 
     /** 消息类型 */
