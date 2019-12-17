@@ -1,6 +1,6 @@
 package com.scosyf.mqtt.integration.service;
 
-import com.scosyf.mqtt.integration.entity.BookBizMessage;
+import com.scosyf.mqtt.integration.common.message.BookBizMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;

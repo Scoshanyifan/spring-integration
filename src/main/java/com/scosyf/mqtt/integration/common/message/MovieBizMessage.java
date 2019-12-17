@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.entity;
+package com.scosyf.mqtt.integration.common.message;
 
 /**
  * @project: spring-integration

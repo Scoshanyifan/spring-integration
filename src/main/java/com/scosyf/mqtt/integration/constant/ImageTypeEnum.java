@@ -2,16 +2,15 @@ package com.scosyf.mqtt.integration.constant;
 
 /**
  * @author: KunBu
- * @time: 2019/10/10 15:46
+ * @time: 2019/12/17 16:11
  * @description:
  */
-public enum MsgTopicEnum {
+public enum ImageTypeEnum {
     //
 
-    SYS,
-    BSC,
-    INF,
-    LOG,
+    JPG,
+    PNG,
+
 
     ;
 }

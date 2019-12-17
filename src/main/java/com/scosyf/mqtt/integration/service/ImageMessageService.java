@@ -1,6 +1,6 @@
 package com.scosyf.mqtt.integration.service;
 
-import com.scosyf.mqtt.integration.entity.ImageBizMessage;
+import com.scosyf.mqtt.integration.common.message.ImageBizMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
@@ -16,11 +16,16 @@ public class ImageMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageMessageService.class);
 
-    public void handleImageMessage(Message<ImageBizMessage> message) {
+    public void saveJpgImage(Message<ImageBizMessage> message) {
 
         LOGGER.info(">>> 处理image，message：{}", message);
 
     }
 
+    public void savePngImage(Message<ImageBizMessage> message) {
+
+        LOGGER.info(">>> 处理image，message：{}", message);
+
+    }
 
 }

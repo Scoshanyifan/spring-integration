@@ -13,8 +13,14 @@ public enum MsgTypeEnum {
     IMAGE,
     MUSIC,
 
-    NA,
-
-
     ;
+
+    public static MsgTypeEnum getMsgType(String name) {
+        for (MsgTypeEnum e : values()) {
+            if (e.name().equals(name)) {
+                return e;
+            }
+        }
+        return null;
+    }
 }

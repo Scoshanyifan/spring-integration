@@ -2,10 +2,11 @@ package com.scosyf.mqtt.integration.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.scosyf.mqtt.integration.common.entity.BaseEntity;
+import com.scosyf.mqtt.integration.common.message.*;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
-import com.scosyf.mqtt.integration.constant.MsgTopicEnum;
+import com.scosyf.mqtt.integration.constant.TopicTypeEnum;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
-import com.scosyf.mqtt.integration.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.mqtt.support.MqttHeaders;
@@ -38,7 +39,7 @@ public class MessageTransferUtil {
      **/
     public static SysMessage mqttMessage2SysMessage(String payload, Map<String, Object> headers) {
         LOGGER.info("received sys message, header:{}, payload:{}", headers, payload);
-        // scosyf/sys/+/client/+/connected
+        // $SYS/brokers/+/clients/+/connected
         String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
         String[] topicSplit = topicStr.split(MqttConstant.TOPIC_SPLITTER);
 
@@ -57,32 +58,30 @@ public class MessageTransferUtil {
         LOGGER.info("received biz message, header:{}, payload:{}", headers, payload);
         BizMessage bizMessage;
         try {
-            // scosyf/biz/+/base/
+            //拆分topic（+为通配符）：kunbu/biz/+/inf/
             String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
             String[] topicArr = topicStr.split(MqttConstant.TOPIC_SPLITTER);
             int topicLength = topicArr.length;
-            // + 为通配符
-            String topicId = topicArr[topicLength - 2];
+            String bizId = topicArr[topicLength - 2];
             String topicType = topicArr[topicLength - 1];
-            MsgTopicEnum msgTopic = MsgTopicEnum.valueOf(topicType.toUpperCase());
-
+            TopicTypeEnum topicTypeEnum = TopicTypeEnum.valueOf(topicType.toUpperCase());
+            //转换成消息实体
             bizMessage = payload2BizMessage(payload);
-            bizMessage.setTopicId(topicId);
-            bizMessage.setMsgTopicEnum(msgTopic);
+            bizMessage.setBizId(bizId);
+            bizMessage.setTopicTypeEnum(topicTypeEnum);
         } catch (Exception e) {
             LOGGER.error(">>> mqttMessage2BizMessage 转业务数据失败.", e);
             bizMessage = new BizMessage();
-            bizMessage.setMsgTypeEnum(MsgTypeEnum.NA);
         }
         return bizMessage;
     }
 
     private static BizMessage payload2BizMessage(String payload) {
         JSONObject payloadJson = JSON.parseObject(payload);
-        String type = payloadJson.getString(MqttConstant.PAYLOAD_MSG_TYPE).toUpperCase();
-        MsgTypeEnum msgType = MsgTypeEnum.valueOf(type);
+        String mt = payloadJson.getString(BizMessage.PAYLOAD_MSG_TYPE).toUpperCase();
+        MsgTypeEnum msgTypeEnum = MsgTypeEnum.getMsgType(mt);
         BizMessage bizMessage;
-        switch (msgType) {
+        switch (msgTypeEnum) {
             case BOOK:
                 bizMessage = payloadJson.toJavaObject(BookBizMessage.class);
                 break;
@@ -99,10 +98,13 @@ public class MessageTransferUtil {
                 bizMessage = payloadJson.toJavaObject(BizMessage.class);
                 break;
         }
-        bizMessage.setMsgTypeEnum(msgType);
+        bizMessage.setMsgTypeEnum(msgTypeEnum);
         return bizMessage;
     }
 
+    public static BaseEntity imageMessage2Entity() {
 
+        return null;
+    }
 
 }

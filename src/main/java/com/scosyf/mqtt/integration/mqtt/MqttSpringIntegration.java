@@ -3,7 +3,7 @@ package com.scosyf.mqtt.integration.mqtt;
 import com.scosyf.mqtt.integration.config.MqttYmlConfig;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
-import com.scosyf.mqtt.integration.entity.BizMessage;
+import com.scosyf.mqtt.integration.common.message.BizMessage;
 import com.scosyf.mqtt.integration.utils.ExecutorFactoryUtil;
 import com.scosyf.mqtt.integration.utils.MessageTransferUtil;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -200,7 +200,7 @@ public class MqttSpringIntegration {
 
     private IntegrationFlow imageIntegrationFlow() {
 
-        return flow -> flow.handle("imageService", "handleImageMessage");
+        return flow -> flow.handle("bookService", "handleBookMessage");
     }
 
 }
