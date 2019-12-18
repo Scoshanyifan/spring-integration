@@ -2,11 +2,10 @@ package com.scosyf.mqtt.integration.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.common.entity.BaseEntity;
 import com.scosyf.mqtt.integration.common.message.*;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
-import com.scosyf.mqtt.integration.constant.TopicTypeEnum;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
+import com.scosyf.mqtt.integration.constant.TopicTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.mqtt.support.MqttHeaders;
@@ -124,9 +123,8 @@ public class MessageTransferUtil {
         return bizMessage;
     }
 
-    public static BaseEntity imageMessage2Entity() {
+    public static J00Message handleJ00ByDeviceType(J00Message j00Message) {
 
         return null;
     }
-
 }

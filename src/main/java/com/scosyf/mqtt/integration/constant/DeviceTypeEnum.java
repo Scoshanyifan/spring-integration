@@ -1,6 +1,7 @@
 package com.scosyf.mqtt.integration.constant;
 
 public enum DeviceTypeEnum {
+    //
 
     OFO6OBOB(0),
     O7270E66(1),

@@ -1,11 +1,12 @@
 package com.scosyf.mqtt.integration.mqtt;
 
+import com.scosyf.mqtt.integration.common.message.BizMessage;
 import com.scosyf.mqtt.integration.common.message.J00Message;
 import com.scosyf.mqtt.integration.common.message.SysMessage;
 import com.scosyf.mqtt.integration.config.MqttYmlConfig;
+import com.scosyf.mqtt.integration.constant.DeviceTypeEnum;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
-import com.scosyf.mqtt.integration.common.message.BizMessage;
 import com.scosyf.mqtt.integration.utils.ExecutorFactoryUtil;
 import com.scosyf.mqtt.integration.utils.MessageTransferUtil;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -201,11 +202,20 @@ public class MqttSpringIntegration {
     }
 
     private IntegrationFlow J00IntegrationFlow() {
-        return null;
+        return flow -> flow
+                .transform(MessageTransferUtil::handleJ00ByDeviceType)
+                .<J00Message, DeviceTypeEnum>route(J00Message::getDeviceType, mapping -> mapping
+                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, sf -> sf.handle("", ""))
+                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, sf -> sf.handle("", ""))
+                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, sf -> sf.handle("", ""))
+                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, sf -> sf.handle("", ""))
+                )
+                .handle("", "");
     }
 
     private IntegrationFlow JERIntegrationFlow() {
-        return flow -> flow.handle("jerService", "handleError");
+        return flow -> flow
+                .handle("jerService", "handleError");
     }
 
     private IntegrationFlow errorFlow() {
