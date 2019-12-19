@@ -13,8 +13,8 @@ public enum MsgTypeEnum {
     J05,
     // 错误信息
     JER,
-
-    BK,
+    // 响应
+    BCK,
 
     NA,
     ;

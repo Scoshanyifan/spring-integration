@@ -1,6 +1,5 @@
 package com.scosyf.mqtt.integration.service;
 
-import com.scosyf.mqtt.integration.common.message.J02Message;
 import com.scosyf.mqtt.integration.common.message.JERMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +18,7 @@ public class JERMessageService {
 
     public void handleError(Message<JERMessage> message) {
 
-        LOGGER.info(">>> 处理image，message：{}", message);
-
+        LOGGER.info(">>> 记录error，message：{}", message);
     }
 
 

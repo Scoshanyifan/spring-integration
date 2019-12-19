@@ -8,11 +8,9 @@
 package com.scosyf.mqtt.integration.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.common.message.BizMessage;
 import com.scosyf.mqtt.integration.common.message.SysMessage;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
-import com.scosyf.mqtt.integration.constant.TopicTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.mqtt.support.MqttHeaders;
@@ -39,14 +37,14 @@ public class SysMessageService {
         String userName = payloadJson.getString(MqttConstant.PAYLOAD_USER_NAME);
         String clientId = payloadJson.getString(MqttConstant.PAYLOAD_CLIENT_ID);
         // app or device
-        String[] identifys = userName.split(MqttConstant.NAME_SPLITTER);
-        String id = identifys[identifys.length - 1];
+        String[] identifies = userName.split(MqttConstant.NAME_SPLITTER);
+        String id = identifies[identifies.length - 1];
         if (MqttConstant.MAC_LENGTH != id.length()) {
             LOGGER.info("非wifi设备:{}", id);
             return null;
         }
         JSONObject mqttPayload = null;
-        mqttPayload.put(MqttConstant.PAYLOAD_MSG_TYPE, MsgTypeEnum.BK.name());
+        mqttPayload.put(MqttConstant.PAYLOAD_MSG_TYPE, MsgTypeEnum.BCK.name());
         switch (state) {
             case MqttConstant.CONNECTED:
                 String mac = topicItems[topicItems.length - 2];
@@ -72,8 +70,10 @@ public class SysMessageService {
             return null;
         }
         String topic = MqttConstant.DEFAULT_TOPIC_PERFIX + id + MqttConstant.TOPIC_SPLITTER
-                + MsgTypeEnum.BK.name().toLowerCase() + MqttConstant.TOPIC_SPLITTER;
-        Message<String> pubMsg = MessageBuilder.withPayload(mqttPayload.toJSONString())
+                + MsgTypeEnum.BCK.name().toLowerCase() + MqttConstant.TOPIC_SPLITTER;
+        // 组装响应message
+        Message<String> pubMsg = MessageBuilder
+                .withPayload(mqttPayload.toJSONString())
                 .setHeader(MqttHeaders.TOPIC, topic)
                 .setHeader(MqttHeaders.RETAINED, Boolean.TRUE)
                 .build();
