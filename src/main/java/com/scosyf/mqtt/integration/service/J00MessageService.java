@@ -1,5 +1,6 @@
 package com.scosyf.mqtt.integration.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.scosyf.mqtt.integration.common.message.J00Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,6 @@ public class J00MessageService {
 
     public void handleHotWater(Message<J00Message> message) {
 
-        LOGGER.info(">>> 处理book，message：{}", message.getPayload());
+        LOGGER.info(">>> 处理book，message：{}", JSONObject.toJSONString(message));
     }
 }

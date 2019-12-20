@@ -91,8 +91,8 @@ public class MqttSpringIntegration {
 
     /** ------------------------------- 入站 -----------------------------
      *
-     *  1.Broker推送消息到订阅了相应topic的client中，即2个channelAdapter
-     *  2.待adapter拿到消息后，放到channel中，即MessageChannel
+     *  1.Broker推送消息到订阅了相应topic的client中，即2个MqttPahoMessageDrivenChannelAdapter生成的client
+     *  2.待client拿到消息后，放到channel中，即MessageChannel
      *  3.最后IntegrationFlow从指定消息源中取消息，再进行处理
      *
      **/
@@ -103,6 +103,15 @@ public class MqttSpringIntegration {
         return new DirectChannel();
     }
 
+    /**
+     * MqttPahoMessageDrivenChannelAdapter作为消息起点，经历以下操作：
+     * 1. 首先是配置订阅信息，客户端工厂等等
+     * 2. 作为Bean后，调用doStart()方法进行connectAndSubscribe()，生成客户端并监听回调
+     * 3. adapter实现MqttCallback，重写了connectionLost(cause)，断开后会进行重连scheduleReconnect()
+     * 4. 同时adapter也重写了messageArrived(topicName, aMessage)，会把接收到的message发送出去sendMessage(message)
+     * 5. 其实就是塞进管道中：this.messagingTemplate.send(getOutputChannel(), message)
+     *
+     **/
     @Bean
     public MessageProducerSupport sysInbound() {
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
@@ -110,7 +119,7 @@ public class MqttSpringIntegration {
                 mqttClientFactory(),
                 mqttYmlConfig.getSysTopic()
         );
-
+        // 如果这里不手动设置入站消息通道，后面系统也会自动生成
         adapter.setOutputChannel(mqttInboundChannel());
         adapter.setCompletionTimeout(MqttConstant.DEFAULT_COMPLETION_TIMEOUT);
         adapter.setConverter(new DefaultPahoMessageConverter());
@@ -138,7 +147,7 @@ public class MqttSpringIntegration {
      *
      *  1.消息应用处理服务器（client）通过MessageGateway把消息放到指定的MessageChannel（mqttOutboundChannel）
      *  2.出站用的MessageHandler"监听"着相应的channel（@ServiceActivator）
-     *  3.当发现有消息时，就会推到broker中（topic在gateway中指定，不然可以配置默认topic）
+     *  3.当发现有消息时，就会推到broker中（topic在gateway中指定，也可以配置默认topic）
      *
      **/
 
@@ -147,6 +156,12 @@ public class MqttSpringIntegration {
         return new DirectChannel();
     }
 
+    /**
+     * MessageHandler和MessageProducer：
+     * 两者都是消息处理组件，区别是前者Contract for handling a Message，而后者是sending messages to a MessageChannel
+     * 即一个可以理解为普通站台（用于后面的消息出站），另一个中央大站（消息入站）
+     *
+     **/
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler mqttOutbound() {
@@ -161,11 +176,9 @@ public class MqttSpringIntegration {
         return messageHandler;
     }
 
-    /** ============================ 业务处理 ============================== */
+    /** ============================ 业务处理（系统和业务） ============================== */
 
     /**
-     * 系统消息处理
-     *
      * Spring Integration Java DSL ：
      * IntegrationFlows和IntegrationFlowBuilder来实现使用Fluent API来定义流程
      *
@@ -173,38 +186,56 @@ public class MqttSpringIntegration {
     @Bean
     public IntegrationFlow sysMsgFlow() {
         return IntegrationFlows
-                // 从channel input获取消息
+                /**
+                 * 消息源是MessageProducer，如果发现没有绑定通道，会新建setOutputChannel(outputChannel)
+                 * 生成IntegrationFlowBuilder，类似流的执行，分阶段处理
+                 **/
                 .from(sysInbound())
-                // 分配通道
+                /**
+                 * 转换通道（上游的DirectChannel -> ExecutorChannel）
+                 * 其中加入了负载均衡策略 LoadBalancingStrategy
+                 **/
                 .channel(channels -> channels.executor(ExecutorFactoryUtil.buildSysExecutor()))
-                // 消息转换成业务模型
+                /**
+                 * 消息处理节点endPoint，用于转成业务模型。
+                 * 当前重载的参数是GenericHandler，为函数式接口，需用户重写：Object handle(P payload, MessageHeaders headers);
+                 *
+                 * 问题：处理后的业务数据以怎样的形式在流中流通？
+                 **/
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
-                // 目前只处理上下线消息
+                /**
+                 * 消息处理节点消息处理节点endPoint，处理上下线消息
+                 **/
                 .filter(SysMessage.class, MessageTransferUtil::filterSysMessageOnOff)
-                // 过滤后的上下线消息进行记录处理
+                /**
+                 * 过滤后的上下线消息进行记录处理
+                 **/
                 .handle("sysMsgService", "onOffline")
-                // 处理结果如果不为空，说明有消息
+                /**
+                 * 处理结果如果不为空，说明有消息
+                 **/
                 .filter(Objects::nonNull)
-                // 如果有消息返回输出
+                /**
+                 * 如果有消息返回输出
+                 **/
                 .handle(mqttOutbound())
-                // 获取集成流程并注册为Bean
+                /**
+                 * 获取集成流程并注册为Bean
+                 **/
                 .get();
     }
 
-    /**
-     * 业务消息处理
-     *
-     **/
     @Bean
     public IntegrationFlow bizMsgFlow() {
         return IntegrationFlows
-                // 消息来源（如果上游没分配outputChannel，就分配一个DirectChannel）
                 .from(bizInbound())
-                // 转换通道（上游的DirectChannel -> ExecutorChannel）
                 .channel(channels -> channels.executor(ExecutorFactoryUtil.buildBizExecutor()))
-                // 消息转换成业务使用（payload和headers变成Message进行流通）
                 .handle(MessageTransferUtil::mqttMessage2BizMessage)
-                // 通过route来选择路由，按照msgType分配，走不同的消息处理（subFlow子流）
+                /**
+                 * 消息节点
+                 * 通过route路由来分流，依据msgType，走不同的消息处理（subFlow子流）
+                 *
+                 **/
                 .<BizMessage, MsgTypeEnum>route(
                         BizMessage::getMsgTypeEnum,
                         routerSpec -> routerSpec
@@ -212,21 +243,19 @@ public class MqttSpringIntegration {
                                 .subFlowMapping(MsgTypeEnum.J00, J00IntegrationFlow())
                                 .subFlowMapping(MsgTypeEnum.J05, JERIntegrationFlow())
                                 .subFlowMapping(MsgTypeEnum.NA, errorFlow())
+                                .defaultOutputToParentFlow()
                 )
-                // 获得IntegrationFlow实体，配置为Spring的Bean
                 .get();
     }
 
     private IntegrationFlow J00IntegrationFlow() {
         return flow -> flow
-                .transform(MessageTransferUtil::handleJ00ByDeviceType)
+                .transform(MessageTransferUtil::handleJ00Message)
                 .<J00Message, DeviceTypeEnum>route(J00Message::getDeviceType, routerSpec -> routerSpec
-                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, subFlow -> subFlow.handle("", ""))
-                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, subFlow -> subFlow.handle("", ""))
-                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, subFlow -> subFlow.handle("", ""))
-                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, subFlow -> subFlow.handle("", ""))
-                )
-                .handle("", "");
+                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, subFlow -> subFlow.handle("j00Service", "handleHeatOven"))
+                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, subFlow -> subFlow.handle("j00Service", "handleHotWater"))
+                        .defaultOutputToParentFlow()
+                );
     }
 
     private IntegrationFlow JERIntegrationFlow() {

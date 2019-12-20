@@ -52,6 +52,8 @@ public class SysMessageService {
                 LOGGER.info(">>> 设备已上线, mac:{}", mac);
 
                 // todo save db
+
+                // 回复
                 mqttPayload = new JSONObject();
                 mqttPayload.put(MqttConstant.PAYLOAD_ONOFF, MqttConstant.PAYLOAD_ONOFF_ON);
                 break;
@@ -59,6 +61,8 @@ public class SysMessageService {
                 LOGGER.info(">>> 设备尝试离线, name:{}", userName);
 
                 // todo save db
+
+
                 mqttPayload = new JSONObject();
                 mqttPayload.put(MqttConstant.PAYLOAD_ONOFF, MqttConstant.PAYLOAD_ONOFF_OFF);
                 break;

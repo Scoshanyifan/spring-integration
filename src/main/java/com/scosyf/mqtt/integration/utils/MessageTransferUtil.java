@@ -123,7 +123,7 @@ public class MessageTransferUtil {
         return bizMessage;
     }
 
-    public static J00Message handleJ00ByDeviceType(J00Message j00Message) {
+    public static J00Message handleJ00Message(J00Message j00Message) {
 
         return null;
     }

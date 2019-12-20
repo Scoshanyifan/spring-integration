@@ -3,14 +3,14 @@ package com.scosyf.mqtt.integration.common.message;
 import java.util.Arrays;
 
 /**
+ *
  * @project: spring-integration
  * @author: kunbu
  * @create: 2019-10-09 17:39
  **/
-public class SysMessage {
+public class SysMessage extends AbstractMqttMessage {
 
     private String topic;
-    private String payload;
     private String[] topicItems;
 
     public String getTopic() {
@@ -21,13 +21,6 @@ public class SysMessage {
         this.topic = topic;
     }
 
-    public String getPayload() {
-        return payload;
-    }
-
-    public void setPayload(String payload) {
-        this.payload = payload;
-    }
 
     public String[] getTopicItems() {
         return topicItems;
@@ -41,7 +34,6 @@ public class SysMessage {
     public String toString() {
         return "SysMessage{" +
                 "topic='" + topic + '\'' +
-                ", payload='" + payload + '\'' +
                 ", topicItems=" + Arrays.toString(topicItems) +
                 '}';
     }
