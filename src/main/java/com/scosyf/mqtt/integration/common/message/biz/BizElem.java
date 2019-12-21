@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.common.message;
+package com.scosyf.mqtt.integration.common.message.biz;
 
 /**
  * @project: spring-integration
@@ -28,7 +28,7 @@ public class BizElem {
 
     @Override
     public String toString() {
-        return "BizElem{" +
+        return "{" +
                 "key='" + key + '\'' +
                 ", value='" + value + '\'' +
                 '}';

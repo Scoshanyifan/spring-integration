@@ -2,10 +2,14 @@ package com.scosyf.mqtt.integration.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.common.message.*;
+import com.scosyf.mqtt.integration.common.message.biz.*;
+import com.scosyf.mqtt.integration.common.message.sys.OnlineMessage;
+import com.scosyf.mqtt.integration.common.message.sys.SysMessage;
+import com.scosyf.mqtt.integration.constant.BizMsgTypeEnum;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
-import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
-import com.scosyf.mqtt.integration.constant.TopicTypeEnum;
+import com.scosyf.mqtt.integration.constant.SysMsgTypeEnum;
+import com.scosyf.mqtt.integration.constant.biz.DeviceTypeEnum;
+import com.scosyf.mqtt.integration.constant.biz.ProductTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.mqtt.support.MqttHeaders;
@@ -21,17 +25,6 @@ public class MessageTransferUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageTransferUtil.class);
 
-    /** ============== mqtt header ============= */
-
-    public static final String QOS                      = "mqtt_qos";
-    public static final String RECEIVED_QOS             = "mqtt_receivedQos";
-    public static final String DUPLICATE                = "mqtt_duplicate";
-    public static final String RETAINED                 = "mqtt_retained";
-    public static final String RECEIVED_RETAINED        = "mqtt_receivedRetained";
-    public static final String TOPIC                    = "mqtt_topic";
-    public static final String RECEIVED_TOPIC           = "mqtt_receivedTopic";
-
-
     /**
      * 转换为系统消息模型
      *
@@ -39,35 +32,38 @@ public class MessageTransferUtil {
     public static SysMessage mqttMessage2SysMessage(String payload, Map<String, Object> headers) {
         LOGGER.info("received sys message, header:{}, payload:{}", headers, payload);
         try {
+            JSONObject payloadJson = JSONObject.parseObject(payload);
             // $SYS/brokers/+/clients/+/connected
             String topic = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
             String[] topicItems = topic.split(MqttConstant.TOPIC_SPLITTER);
+            String lastTopicItem = topicItems[topicItems.length - 1];
 
-            SysMessage sysMessage = new SysMessage();
-            sysMessage.setPayload(payload);
-            sysMessage.setTopic(topic);
-            sysMessage.setTopicItems(topicItems);
-            return sysMessage;
+            if (lastTopicItem.equals(SysMessage.CONNECTED) || lastTopicItem.equals(SysMessage.DISCONNECTED)) {
+                OnlineMessage online = new OnlineMessage();
+                online.setSysMsgTypeEnum(SysMsgTypeEnum.ONOFF);
+
+                online.setClientId(payloadJson.getString(OnlineMessage.PAYLOAD_CLIENTID));
+                online.setUserName(payloadJson.getString(OnlineMessage.PAYLOAD_USERNAME));
+                online.setTimeStamp(payloadJson.getString(OnlineMessage.PAYLOAD_TIMPSTAMP));
+                if (lastTopicItem.equals(SysMessage.CONNECTED)) {
+                    online.setOnline(true);
+                    online.setCleanSession(payloadJson.getString(OnlineMessage.PAYLOAD_CLEANSESSION));
+                    online.setIpAddress(payloadJson.getString(OnlineMessage.PAYLOAD_IPADDRESS));
+                    online.setProtocol(payloadJson.getString(OnlineMessage.PAYLOAD_PROTOCOL));
+                    online.setConnAck(payloadJson.getString(OnlineMessage.PAYLOAD_CONNACK));
+                } else {
+                    online.setOnline(false);
+                    online.setReason(payloadJson.getString(OnlineMessage.PAYLOAD_REASON));
+                }
+                return online;
+            } else {
+                // other sys message
+                return null;
+            }
         } catch (Exception e) {
             LOGGER.error(">>> mqttMessage2SysMessage 系统消息转换异常", e);
             return null;
         }
-    }
-
-    /**
-     * 过滤上下线消息
-     * @param sysMessage
-     * @return
-     */
-    public static Boolean filterSysMessageOnOff(SysMessage sysMessage) {
-        if (sysMessage == null) {
-            return Boolean.FALSE;
-        }
-        String onOff = sysMessage.getTopicItems()[sysMessage.getTopicItems().length - 1];
-        if (MqttConstant.DISCONNECTED.equals(onOff) || MqttConstant.CONNECTED.equals(onOff)) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
     }
 
     /**
@@ -78,36 +74,33 @@ public class MessageTransferUtil {
         LOGGER.info("received biz message, header:{}, payload:{}", headers, payload);
         BizMessage bizMessage;
         try {
-            //kunbu/biz/+/inf/
-            String topicStr = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
-            String[] topicArr = topicStr.split(MqttConstant.TOPIC_SPLITTER);
-            int topicLength = topicArr.length;
-            String bizId = topicArr[topicLength - 2];
-            String topicType = topicArr[topicLength - 1];
-            TopicTypeEnum topicTypeEnum = TopicTypeEnum.valueOf(topicType.toUpperCase());
             //转换成消息实体
             bizMessage = payload2BizMessage(payload);
+            //kunbu/biz/+/inf/
+            String topic = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
+            String[] topicItems = topic.split(MqttConstant.TOPIC_SPLITTER);
+            String bizId = topicItems[topicItems.length - 2];
             bizMessage.setBizId(bizId);
-            bizMessage.setTopicTypeEnum(topicTypeEnum);
+            //deviceType
+            String dt = bizMessage.getDt().toUpperCase();
+            bizMessage.setDeviceType(DeviceTypeEnum.valueOf(dt));
+            bizMessage.setProductTypeEnum(ProductTypeEnum.prefix(dt));
         } catch (Exception e) {
             LOGGER.error(">>> mqttMessage2BizMessage 转业务数据失败.", e);
             bizMessage = new BizMessage();
-            bizMessage.setMsgTypeEnum(MsgTypeEnum.NA);
+            bizMessage.setBizMsgTypeEnum(BizMsgTypeEnum.NA);
         }
         return bizMessage;
     }
 
     private static BizMessage payload2BizMessage(String payload) {
         JSONObject payloadJson = JSON.parseObject(payload);
-        String mt = payloadJson.getString(MqttConstant.PAYLOAD_MSG_TYPE).toUpperCase();
-        MsgTypeEnum msgTypeEnum = MsgTypeEnum.getMsgType(mt);
+        String mt = payloadJson.getString(BizMessage.PAYLOAD_MESSAGE_TYPE).toUpperCase();
+        BizMsgTypeEnum bizMsgTypeEnum = BizMsgTypeEnum.getMsgType(mt);
         BizMessage bizMessage;
-        switch (msgTypeEnum) {
+        switch (bizMsgTypeEnum) {
             case J00:
                 bizMessage = payloadJson.toJavaObject(J00Message.class);
-                break;
-            case J02:
-                bizMessage = payloadJson.toJavaObject(J02Message.class);
                 break;
             case J05:
                 bizMessage = payloadJson.toJavaObject(J05Message.class);
@@ -119,12 +112,9 @@ public class MessageTransferUtil {
                 bizMessage = payloadJson.toJavaObject(BizMessage.class);
                 break;
         }
-        bizMessage.setMsgTypeEnum(msgTypeEnum);
+        bizMessage.setBizMsgTypeEnum(bizMsgTypeEnum);
         return bizMessage;
     }
 
-    public static J00Message handleJ00Message(J00Message j00Message) {
 
-        return null;
-    }
 }

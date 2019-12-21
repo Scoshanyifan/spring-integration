@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.common.message;
+package com.scosyf.mqtt.integration.common.message.biz;
 
 /**
  * @project: spring-integration

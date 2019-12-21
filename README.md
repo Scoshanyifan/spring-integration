@@ -3,11 +3,16 @@
 
 demo中消息结构如下：
 
-- SysMassage
+- AbstractMessage(header, payload)
 
-- BizMessage
-    1. J00Message
-    2. J02Message
-    3. J05Message
-    4. JERMessage
+    - SysMassage
+        1. online(connected)
+        2. offline(disconnected)
+        3. ...
+        
+    - BizMessage
+        1. J00Message(实时上报设备参数等)
+        2. J05Message(设备耗气量统计)
+        3. JERMessage(设备上报错误信息)
+        4. ...
 

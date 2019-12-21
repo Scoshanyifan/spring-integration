@@ -1,10 +1,12 @@
 package com.scosyf.mqtt.integration.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.common.message.J00Message;
+import com.scosyf.mqtt.integration.common.entity.Device;
+import com.scosyf.mqtt.integration.common.entity.DeviceInfo;
+import com.scosyf.mqtt.integration.common.message.biz.J00Message;
+import com.scosyf.mqtt.integration.constant.biz.ProductTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,13 +19,50 @@ public class J00MessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(J00MessageService.class);
 
-    public void handleHeatOven(Message<J00Message> message) {
+    public void handleDeviceInfo(J00Message j00Message) {
+        ProductTypeEnum productType = j00Message.getProductTypeEnum();
+        if (productType == null) {
+            LOGGER.error(">>> handleDeviceInfo，message：{}", j00Message);
+        } else {
+            LOGGER.info(">>> handleDeviceInfo，message：{}", j00Message);
+            Device device = convert2Device(j00Message);
+            switch (productType) {
+                case HOT_WATER:
 
-        LOGGER.info(">>> 处理book，message：{}", message.getPayload());
+                case HEAT_OVEN:
+
+                case CLEANER:
+
+                default:
+                    break;
+            }
+        }
     }
 
-    public void handleHotWater(Message<J00Message> message) {
+    private Device convert2Device(J00Message j00Message) {
+        Device device = new Device();
+        device.setMac(j00Message.getBizId());
+        device.setDeviceType(j00Message.getDeviceType().name());
+        device.setProductType(j00Message.getProductTypeEnum().getProductType());
 
-        LOGGER.info(">>> 处理book，message：{}", JSONObject.toJSONString(message));
+        JSONObject elemJson = new JSONObject();
+        j00Message.getElem().stream().forEach(e -> elemJson.put(e.getKey(), e.getValue()));
+        DeviceInfo deviceInfo = elemJson.toJavaObject(DeviceInfo.class);
+        device.setDeviceInfo(deviceInfo);
+
+        return device;
     }
+
+    private void saveHotWater(Device device) {
+
+    }
+
+    private void saveHeatOven(Device device) {
+
+    }
+
+    private void saveCleaner(Device device) {
+
+    }
+
 }

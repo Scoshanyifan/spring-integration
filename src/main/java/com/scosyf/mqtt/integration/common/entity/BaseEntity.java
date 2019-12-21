@@ -5,7 +5,7 @@ package com.scosyf.mqtt.integration.common.entity;
  * @author: kunbu
  * @create: 2019-12-17 18:07
  **/
-public class BaseEntity {
+public abstract class BaseEntity {
 
     private String id;
 

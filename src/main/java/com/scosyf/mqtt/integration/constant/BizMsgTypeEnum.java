@@ -5,26 +5,23 @@ package com.scosyf.mqtt.integration.constant;
  * @time: 2019/10/9 17:26
  * @description:
  */
-public enum MsgTypeEnum {
-    //
-
+public enum BizMsgTypeEnum {
+    // 运行参数
     J00,
-    J02,
+    // 耗气量
     J05,
     // 错误信息
     JER,
-    // 响应
-    BCK,
 
     NA,
     ;
 
-    public static MsgTypeEnum getMsgType(String name) {
-        for (MsgTypeEnum e : values()) {
+    public static BizMsgTypeEnum getMsgType(String name) {
+        for (BizMsgTypeEnum e : values()) {
             if (e.name().equals(name)) {
                 return e;
             }
         }
-        return null;
+        return NA;
     }
 }

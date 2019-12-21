@@ -1,12 +1,9 @@
 package com.scosyf.mqtt.integration.mqtt;
 
-import com.scosyf.mqtt.integration.common.message.BizMessage;
-import com.scosyf.mqtt.integration.common.message.J00Message;
-import com.scosyf.mqtt.integration.common.message.SysMessage;
+import com.scosyf.mqtt.integration.common.message.biz.BizMessage;
 import com.scosyf.mqtt.integration.config.MqttYmlConfig;
-import com.scosyf.mqtt.integration.constant.DeviceTypeEnum;
+import com.scosyf.mqtt.integration.constant.BizMsgTypeEnum;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
-import com.scosyf.mqtt.integration.constant.MsgTypeEnum;
 import com.scosyf.mqtt.integration.utils.ExecutorFactoryUtil;
 import com.scosyf.mqtt.integration.utils.MessageTransferUtil;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -197,26 +194,22 @@ public class MqttSpringIntegration {
                  **/
                 .channel(channels -> channels.executor(ExecutorFactoryUtil.buildSysExecutor()))
                 /**
-                 * 消息处理节点endPoint，用于转成业务模型。
+                 * 消息处理节点endPoint：用于转成业务模型。
                  * 当前重载的参数是GenericHandler，为函数式接口，需用户重写：Object handle(P payload, MessageHeaders headers);
                  *
                  * 问题：处理后的业务数据以怎样的形式在流中流通？
                  **/
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
                 /**
-                 * 消息处理节点消息处理节点endPoint，处理上下线消息
+                 * 消息处理节点endPoint：对上下线消息进行记录处理（如果以后有其他需求，可以选择route）
                  **/
-                .filter(SysMessage.class, MessageTransferUtil::filterSysMessageOnOff)
+                .handle("sysMsgService", "handleOnOff")
                 /**
-                 * 过滤后的上下线消息进行记录处理
-                 **/
-                .handle("sysMsgService", "onOffline")
-                /**
-                 * 处理结果如果不为空，说明有消息
+                 * 消息处理节点endPoint：判断消息是否为空
                  **/
                 .filter(Objects::nonNull)
                 /**
-                 * 如果有消息返回输出
+                 * 消息处理节点endPoint：如果有消息返回输出
                  **/
                 .handle(mqttOutbound())
                 /**
@@ -236,31 +229,25 @@ public class MqttSpringIntegration {
                  * 通过route路由来分流，依据msgType，走不同的消息处理（subFlow子流）
                  *
                  **/
-                .<BizMessage, MsgTypeEnum>route(
-                        BizMessage::getMsgTypeEnum,
+                .<BizMessage, BizMsgTypeEnum>route(
+                        BizMessage::getBizMsgTypeEnum,
                         routerSpec -> routerSpec
-//                                .channelMapping(MsgTypeEnum.JER, "channel")
-                                .subFlowMapping(MsgTypeEnum.J00, J00IntegrationFlow())
-                                .subFlowMapping(MsgTypeEnum.J05, JERIntegrationFlow())
-                                .subFlowMapping(MsgTypeEnum.NA, errorFlow())
+                                .subFlowMapping(BizMsgTypeEnum.J00, J00IntegrationFlow())
+                                .subFlowMapping(BizMsgTypeEnum.J05, JERIntegrationFlow())
+                                .subFlowMapping(BizMsgTypeEnum.JER, JERIntegrationFlow())
+                                .subFlowMapping(BizMsgTypeEnum.NA, errorFlow())
+//                                .channelMapping(BizMsgTypeEnum.JER, "channel") // channelMapping是什么作用
                                 .defaultOutputToParentFlow()
                 )
                 .get();
     }
 
     private IntegrationFlow J00IntegrationFlow() {
-        return flow -> flow
-                .transform(MessageTransferUtil::handleJ00Message)
-                .<J00Message, DeviceTypeEnum>route(J00Message::getDeviceType, routerSpec -> routerSpec
-                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, subFlow -> subFlow.handle("j00Service", "handleHeatOven"))
-                        .subFlowMapping(DeviceTypeEnum.OFO6OBOB, subFlow -> subFlow.handle("j00Service", "handleHotWater"))
-                        .defaultOutputToParentFlow()
-                );
+        return flow -> flow.handle("jooService", "handleDeviceInfo");
     }
 
     private IntegrationFlow JERIntegrationFlow() {
-        return flow -> flow
-                .handle("jerService", "handleError");
+        return flow -> flow.handle("jerService", "handleError");
     }
 
     private IntegrationFlow errorFlow() {
