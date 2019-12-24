@@ -67,7 +67,7 @@ public class MessageTransferUtil {
     }
 
     /**
-     * 原始数据转换为业务消息模型
+     * 转换为业务消息模型
      *
      **/
     public static BizMessage mqttMessage2BizMessage(String payload, Map<String, Object> headers) {

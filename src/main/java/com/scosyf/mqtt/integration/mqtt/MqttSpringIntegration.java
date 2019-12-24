@@ -243,14 +243,15 @@ public class MqttSpringIntegration {
     }
 
     private IntegrationFlow J00IntegrationFlow() {
-        return flow -> flow.handle("jooService", "handleDeviceInfo");
+        return flow -> flow.handle("j00Service", "handleDeviceInfo");
     }
 
     private IntegrationFlow JERIntegrationFlow() {
         return flow -> flow.handle("jerService", "handleError");
+
     }
 
     private IntegrationFlow errorFlow() {
-        return null;
+        return flow -> flow.handle("naService", "handleNA");
     }
 }

@@ -10,7 +10,7 @@ import java.util.Arrays;
  * @author: kunbu
  * @create: 2019-10-09 17:39
  **/
-public abstract class SysMessage {
+public class SysMessage {
 
     /**
      * topic:$SYS/brokers/emqttd-linnei@10.45.33.195/clients/a:rinnai:SR:01:SR:13701789682:1576548009/connected

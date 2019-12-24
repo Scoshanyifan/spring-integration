@@ -1,5 +1,7 @@
 package com.scosyf.mqtt.integration.common.entity;
 
+import org.springframework.data.annotation.Id;
+
 /**
  * @project: spring-integration
  * @author: kunbu
@@ -7,6 +9,7 @@ package com.scosyf.mqtt.integration.common.entity;
  **/
 public abstract class BaseEntity {
 
+    @Id
     private String id;
 
     public String getId() {
@@ -15,5 +18,12 @@ public abstract class BaseEntity {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseEntity{" +
+                "id='" + id + '\'' +
+                '}';
     }
 }

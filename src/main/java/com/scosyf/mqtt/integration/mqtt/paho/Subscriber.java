@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.paho;
+package com.scosyf.mqtt.integration.mqtt.paho;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
