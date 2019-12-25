@@ -7,7 +7,7 @@ mqtt:
   username: mqtt-kunbu
   password: 123456
   cleansession: false
-  # 消息发布
+  # 如果非localhost，需要在etc/acl.conf中配置规则允许此client获取 $SYS/# 消息
   clientid: consumer-publisher
   # 业务消息订阅
   bizclientid: consumer-biz-subscriber

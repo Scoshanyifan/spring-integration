@@ -9,17 +9,7 @@ import java.util.Arrays;
  **/
 public abstract class AbstractMessage {
 
-    private String topic;
-
     private String[] topicItems;
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
 
     public String[] getTopicItems() {
         return topicItems;
@@ -31,8 +21,7 @@ public abstract class AbstractMessage {
 
     @Override
     public String toString() {
-        return "AbstractMessage{" +
-                "topic='" + topic + '\'' +
+        return "{" +
                 ", topicItems=" + Arrays.toString(topicItems) +
                 '}';
     }

@@ -16,6 +16,7 @@ public class BizMessage extends AbstractMessage {
     public static final String PAYLOAD_MESSAGE_TYPE         = "mt";
     /** 设备类型 */
     public static final String PAYLOAD_DEVICE_TYPE          = "dt";
+    /** 时间戳 */
     public static final String PAYLOAD_LAST_TIMESTAMP       = "lt";
 
     private String mt;
