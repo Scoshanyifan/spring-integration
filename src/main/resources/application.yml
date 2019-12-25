@@ -1,6 +1,14 @@
 server:
   port: 9090
 
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost/mqtt
+      port: 27017
+      username:
+      password:
+
 mqtt:
   # 客户端信息
   host: tcp://127.0.0.1:1883

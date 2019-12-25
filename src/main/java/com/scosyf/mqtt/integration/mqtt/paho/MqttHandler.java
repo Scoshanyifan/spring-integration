@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.paho;
+package com.scosyf.mqtt.integration.mqtt.paho;
 
 import com.scosyf.mqtt.integration.config.MqttPropertyConfig;
 import com.scosyf.mqtt.integration.constant.MqttConstant;

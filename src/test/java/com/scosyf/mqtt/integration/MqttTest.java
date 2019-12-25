@@ -1,7 +1,7 @@
 package com.scosyf.mqtt.integration;
 
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.paho.MqttHandler;
+import com.scosyf.mqtt.integration.mqtt.paho.MqttHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

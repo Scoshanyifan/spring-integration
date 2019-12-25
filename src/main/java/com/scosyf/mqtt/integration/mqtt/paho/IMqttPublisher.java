@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.paho;
+package com.scosyf.mqtt.integration.mqtt.paho;
 
 /**
  * @author: KunBu

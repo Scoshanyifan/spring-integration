@@ -12,8 +12,10 @@ import com.scosyf.mqtt.integration.common.message.sys.OnlineMessage;
 import com.scosyf.mqtt.integration.common.message.sys.SysMessage;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.constant.SysMsgTypeEnum;
+import com.scosyf.mqtt.integration.dao.DeviceDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -29,6 +31,9 @@ import java.util.Objects;
 public class SysMessageService {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(SysMessageService.class);
+
+    @Autowired
+    private DeviceDao deviceDao;
 
     /**
      * 记录设备上下线
@@ -46,8 +51,8 @@ public class SysMessageService {
         if (MqttConstant.MAC_LENGTH != mac.length()) {
             return null;
         }
-        // 上下线处理完成后ACK设备
-        JSONObject mqttPayload;
+        // 上下线处理完成后，设备最近状态作为保留消息，供App使用
+        JSONObject mqttPayload = null;
         // $SYS/brokers/emqttd-linnei@10.45.33.195/clients/d:rinnai:SR:01:SR:98D863BE7116044B/disconnected
         String[] topicItems = onlineMessage.getTopicItems();
         String onOff = topicItems[topicItems.length - 1];
@@ -57,20 +62,21 @@ public class SysMessageService {
                 LOGGER.info(">>> 设备上线, mac:{}, clientId:{}, node:{}, ip:{}",
                         mac, onlineMessage.getClientId(), node, onlineMessage.getIpAddress());
 
-                // todo  保存mac，clientId等信息，作为上线标识
-
+                // 保存mac，clientId等信息，作为上线标识
+                deviceDao.saveOnline(onlineMessage.getClientId(), mac, onlineMessage.getIpAddress(), node);
                 mqttPayload = new JSONObject();
                 mqttPayload.put(OnlineMessage.PAYLOAD_ONOFF, OnlineMessage.PAYLOAD_ONOFF_ON);
                 break;
             case SysMessage.DISCONNECTED:
                 LOGGER.info(">>> 设备离线, mac:{}, clientId:{}, reason:{}", mac, onlineMessage.getClientId(), onlineMessage.getReason());
-                // todo 通过mac和clientId 判断上次的上线情况（下线失败的处理）
-
-                mqttPayload = new JSONObject();
-                mqttPayload.put(OnlineMessage.PAYLOAD_ONOFF, OnlineMessage.PAYLOAD_ONOFF_OFF);
+                // 通过mac和clientId 判断上次的上线情况（下线失败的处理）
+                if (deviceDao.saveOffline(onlineMessage.getClientId(), mac)) {
+                    mqttPayload = new JSONObject();
+                    mqttPayload.put(OnlineMessage.PAYLOAD_ONOFF, OnlineMessage.PAYLOAD_ONOFF_OFF);
+                }
                 break;
             default:
-                mqttPayload = null;
+                //
         }
         if (Objects.isNull(mqttPayload)) {
             return null;
@@ -78,7 +84,7 @@ public class SysMessageService {
         // 设置服务端保留消息topic：kunbu/retain/
         String topic = MqttConstant.DEFAULT_TOPIC_PERFIX + MqttConstant.TOPIC_SPLITTER
                 + MqttConstant.RETAIN_TOPIC_SUFFIX + MqttConstant.TOPIC_SPLITTER;
-        // 组装响应message，作为保留消息放在EMQ中，用于app获取设备最新的在离线状态
+        // 组装message
         Message<String> pubMsg = MessageBuilder
                 .withPayload(mqttPayload.toJSONString())
                 .setHeader(MqttHeaders.TOPIC, topic)
