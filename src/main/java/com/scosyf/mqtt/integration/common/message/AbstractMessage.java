@@ -9,6 +9,9 @@ import java.util.Arrays;
  **/
 public abstract class AbstractMessage {
 
+    /**
+     * $SYS/brokers/emqttd-linnei@10.45.33.195/clients/d:rinnai:SR:01:SR:98D863BE7116044B/disconnected
+     */
     private String[] topicItems;
 
     public String[] getTopicItems() {

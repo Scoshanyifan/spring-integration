@@ -1,11 +1,14 @@
 package com.scosyf.mqtt.integration.common.entity;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 
 /**
  * 设备上下线记录
  *
  **/
+@Document(collection = "deviceOnlineRecord")
 public class DeviceOnlineRecord extends BaseEntity {
 
     private String mac;

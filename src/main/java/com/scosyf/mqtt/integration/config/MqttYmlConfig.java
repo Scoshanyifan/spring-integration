@@ -18,11 +18,11 @@ public class MqttYmlConfig {
     private String clientId;
     private Boolean cleanSession;
 
-    private String sysClientId;
-    private String[] sysTopic;
-
     private String bizClientId;
     private String[] bizTopic;
+
+    private String sysClientId;
+    private String[] sysTopic;
 
     public String getPassword() {
         return password;

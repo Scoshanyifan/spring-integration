@@ -50,7 +50,6 @@ public class OnlineMessage extends SysMessage {
 
     private String timeStamp;
 
-
     private String reason;
 
     private Boolean online;

@@ -4,8 +4,8 @@ import java.util.List;
 
 /**
  * payload:{
- *      "ptn":"J05",
- *      "id":"0F060B0B",
+ *      "mt":"J05",
+ *      "dt":"0F060B0B",
  *      "stat":[
  *          {"hotWaterGasConsumption":"0000000000000000"},
  *          {"heatingGasConsumption":"0000000000000000"}

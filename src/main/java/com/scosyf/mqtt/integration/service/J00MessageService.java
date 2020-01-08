@@ -22,9 +22,9 @@ public class J00MessageService {
     public void handleDeviceInfo(J00Message j00Message) {
         ProductTypeEnum productType = j00Message.getProductTypeEnum();
         if (productType == null) {
-            LOGGER.error(">>> handleDeviceInfo，message：{}", j00Message);
+            LOGGER.error(">>> handleDeviceInfo, productType null, message：{}", j00Message);
         } else {
-            LOGGER.info(">>> handleDeviceInfo，message：{}", j00Message);
+            LOGGER.info(">>> handleDeviceInfo, message：{}", j00Message);
             Device device = convert2Device(j00Message);
             switch (productType) {
                 case HOT_WATER:

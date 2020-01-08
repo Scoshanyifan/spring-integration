@@ -7,17 +7,17 @@ import java.util.List;
  *      "mt":"J00",
  *      "dt":"0F060B0B",
  *      "elem":[
- *          {"id":"operationMode","data":"432804"},
- *          {"id":"burningStateDHW","data":"30"},
- *          {"id":"burningStateCH","data":"31"},
- *          {"id":"temperatureUnit","data":"30"},
- *          {"id":"waterPressureUnit","data":"31"},
- *          {"id":"hotWaterTempSetting","data":"34"},
- *          {"id":"heatingTempSetting","data":"2D"},
- *          {"id":"waterPressure","data":"0000"},
- *          {"id":"errorCode","data":"0"},
- *          {"id":"hotWaterTempBound","data":"3C25"},
- *          {"id":"heatingTempBound","data":"5228"}
+ *          {"key":"operationMode","value":"432804"},
+ *          {"key":"burningStateDHW","value":"30"},
+ *          {"key":"burningStateCH","value":"31"},
+ *          {"key":"temperatureUnit","value":"30"},
+ *          {"key":"waterPressureUnit","value":"31"},
+ *          {"key":"hotWaterTempSetting","value":"34"},
+ *          {"key":"heatingTempSetting","value":"2D"},
+ *          {"key":"waterPressure","value":"0000"},
+ *          {"key":"errorCode","value":"0"},
+ *          {"key":"hotWaterTempBound","value":"3C25"},
+ *          {"key":"heatingTempBound","value":"5228"}
  *       ],
  *       "lt":"2019-12-20T09:35:30+08:00"
  * }

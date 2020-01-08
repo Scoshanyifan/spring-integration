@@ -7,6 +7,8 @@ import com.scosyf.mqtt.integration.constant.MqttConstant;
 import com.scosyf.mqtt.integration.utils.ExecutorFactoryUtil;
 import com.scosyf.mqtt.integration.utils.MessageTransferUtil;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +50,8 @@ import java.util.Objects;
 @Configuration
 public class MqttSpringIntegration {
 
+    private static final Logger logger = LoggerFactory.getLogger(MqttSpringIntegration.class);
+
     @Autowired
     private MqttYmlConfig mqttYmlConfig;
 
@@ -55,6 +59,7 @@ public class MqttSpringIntegration {
 
     @Bean
     public MqttConnectOptions mqttConnectOptions() {
+
         MqttConnectOptions options = new MqttConnectOptions();
         //基础信息
         options.setServerURIs(new String[]{mqttYmlConfig.getHost()});
@@ -69,6 +74,7 @@ public class MqttSpringIntegration {
         // 设置自动重连
         options.setAutomaticReconnect(false);
         // 设置是否清除session（如果不清除，clientId不变的情况下会保存身份信息和离线消息）
+        // TODO 设置后重启消息应用，离线消息会正常处理（但是存在报错现象，提示subscriber找不到）
         options.setCleanSession(false);
 
         // 设置遗嘱
@@ -94,11 +100,6 @@ public class MqttSpringIntegration {
      *
      **/
 
-    @Bean
-    public MessageChannel mqttInboundChannel() {
-        // point 2 point
-        return new DirectChannel();
-    }
 
     /**
      * MqttPahoMessageDrivenChannelAdapter作为消息起点，经历以下操作：
@@ -116,8 +117,8 @@ public class MqttSpringIntegration {
                 mqttClientFactory(),
                 mqttYmlConfig.getSysTopic()
         );
-        // 如果这里不手动设置入站消息通道，后面系统也会自动生成
-        adapter.setOutputChannel(mqttInboundChannel());
+        // 指定生成的消息应该发送到哪个通道，如果不手动设置入站消息通道，系统也会自动创建 TODO 如果有多个inbound，不能指向同一个消息通道
+//        adapter.setOutputChannel(mqttInboundChannel());
         adapter.setCompletionTimeout(MqttConstant.DEFAULT_COMPLETION_TIMEOUT);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(MqttConstant.QOS_DEFAULT);
@@ -131,8 +132,6 @@ public class MqttSpringIntegration {
                 mqttClientFactory(),
                 mqttYmlConfig.getBizTopic()
         );
-        // 指定生成的消息应该发送到哪个消息通道
-        adapter.setOutputChannel(mqttInboundChannel());
         adapter.setCompletionTimeout(MqttConstant.DEFAULT_COMPLETION_TIMEOUT);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(MqttConstant.QOS_DEFAULT);
@@ -197,7 +196,7 @@ public class MqttSpringIntegration {
                  * 消息处理节点endPoint：用于转成业务模型。
                  * 当前重载的参数是GenericHandler，为函数式接口，需用户重写：Object handle(P payload, MessageHeaders headers);
                  *
-                 * 问题：处理后的业务数据以怎样的形式在流中流通？
+                 * 问题：处理后的业务数据以怎样的形式在流中流通？ TODO
                  **/
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
                 /**
@@ -233,25 +232,33 @@ public class MqttSpringIntegration {
                         BizMessage::getBizMsgTypeEnum,
                         routerSpec -> routerSpec
                                 .subFlowMapping(BizMsgTypeEnum.J00, J00IntegrationFlow())
-                                .subFlowMapping(BizMsgTypeEnum.J05, JERIntegrationFlow())
+                                .subFlowMapping(BizMsgTypeEnum.J05, J05IntegrationFlow())
                                 .subFlowMapping(BizMsgTypeEnum.JER, JERIntegrationFlow())
                                 .subFlowMapping(BizMsgTypeEnum.NA, errorFlow())
-//                                .channelMapping(BizMsgTypeEnum.JER, "channel") // channelMapping是什么作用
+//                                .channelMapping(BizMsgTypeEnum.JER, "channel") // channelMapping是什么作用 TODO
                                 .defaultOutputToParentFlow()
                 )
                 .get();
     }
 
     private IntegrationFlow J00IntegrationFlow() {
-        return flow -> flow.handle("j00Service", "handleDeviceInfo");
+        return flow -> flow
+                .handle("j00Service", "handleDeviceInfo");
+    }
+
+    private IntegrationFlow J05IntegrationFlow() {
+        return flow -> flow
+                .handle("j00Service", "handleDeviceInfo");
     }
 
     private IntegrationFlow JERIntegrationFlow() {
-        return flow -> flow.handle("jerService", "handleError");
+        return flow -> flow.
+                handle("jerService", "handleError");
 
     }
 
     private IntegrationFlow errorFlow() {
-        return flow -> flow.handle("naService", "handleNA");
+        return flow -> flow
+                .handle("naService", "handleNA");
     }
 }

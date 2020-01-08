@@ -41,9 +41,6 @@ public class SpringIntegrationApplication {
                 + "\n    For more information please visit:                   "
                 + "\n    https://spring.io/projects/spring-integration        "
                 + "\n                                                         "
-                + "\n=========================================================");
-
-        LOGGER.info("\n========================================================="
                 + "\n                                                         "
                 + "\n    这是一个基于MQTT订阅的消息处理服务 -                     "
                 + "\n    订阅关键的TOPIC，将收到的mqtt消息处理并最终写入数据        "

@@ -26,7 +26,7 @@ public class BizMessage extends AbstractMessage {
     private BizMsgTypeEnum bizMsgTypeEnum;
     private DeviceTypeEnum deviceType;
     private ProductTypeEnum productTypeEnum;
-    /** 业务识别码 */
+    /** 业务识别码（mac） */
     private String bizId;
 
     public String getLt() {

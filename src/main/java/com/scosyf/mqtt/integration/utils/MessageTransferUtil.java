@@ -32,16 +32,16 @@ public class MessageTransferUtil {
     public static SysMessage mqttMessage2SysMessage(String payload, Map<String, Object> headers) {
         LOGGER.info("received sys message, header:{}, payload:{}", headers, payload);
         try {
-            JSONObject payloadJson = JSONObject.parseObject(payload);
             // $SYS/brokers/+/clients/+/connected
-            String topic = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
-            String[] topicItems = topic.split(MqttConstant.TOPIC_SPLITTER);
+            String[] topicItems = headers.get(MqttHeaders.RECEIVED_TOPIC).toString().split(MqttConstant.TOPIC_SPLITTER);
+            // 检查是否是上下线消息
             String lastTopicItem = topicItems[topicItems.length - 1];
-
             if (lastTopicItem.equals(SysMessage.CONNECTED) || lastTopicItem.equals(SysMessage.DISCONNECTED)) {
                 OnlineMessage online = new OnlineMessage();
+                online.setTopicItems(topicItems);
                 online.setSysMsgTypeEnum(SysMsgTypeEnum.ONOFF);
 
+                JSONObject payloadJson = JSONObject.parseObject(payload);
                 online.setClientId(payloadJson.getString(OnlineMessage.PAYLOAD_CLIENTID));
                 online.setUserName(payloadJson.getString(OnlineMessage.PAYLOAD_USERNAME));
                 online.setTimeStamp(payloadJson.getString(OnlineMessage.PAYLOAD_TIMPSTAMP));
@@ -74,19 +74,22 @@ public class MessageTransferUtil {
         LOGGER.info("received biz message, header:{}, payload:{}", headers, payload);
         BizMessage bizMessage;
         try {
-            //转换成消息实体
+            //转换成具体消息类型
             bizMessage = payload2BizMessage(payload);
             //kunbu/biz/+/inf/
-            String topic = headers.get(MqttHeaders.RECEIVED_TOPIC).toString();
-            String[] topicItems = topic.split(MqttConstant.TOPIC_SPLITTER);
-            String bizId = topicItems[topicItems.length - 2];
-            bizMessage.setBizId(bizId);
+            String[] topicItems = headers.get(MqttHeaders.RECEIVED_TOPIC).toString().split(MqttConstant.TOPIC_SPLITTER);
+            bizMessage.setTopicItems(topicItems);
+            bizMessage.setBizId(topicItems[topicItems.length - 2]);
             //deviceType
             String dt = bizMessage.getDt().toUpperCase();
-            bizMessage.setDeviceType(DeviceTypeEnum.valueOf(dt));
+            DeviceTypeEnum deviceTypeEnum = DeviceTypeEnum.of(dt);
+            if (deviceTypeEnum == null) {
+                LOGGER.error(">>> mqttMessage2BizMessage 转业务数据失败, bizMessage:{}", bizMessage);
+            }
+            bizMessage.setDeviceType(deviceTypeEnum);
             bizMessage.setProductTypeEnum(ProductTypeEnum.prefix(dt));
         } catch (Exception e) {
-            LOGGER.error(">>> mqttMessage2BizMessage 转业务数据失败.", e);
+            LOGGER.error(">>> mqttMessage2BizMessage 转业务数据异常.", e);
             bizMessage = new BizMessage();
             bizMessage.setBizMsgTypeEnum(BizMsgTypeEnum.NA);
         }
