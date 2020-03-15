@@ -117,7 +117,7 @@ public class MqttSpringIntegration {
                 mqttClientFactory(),
                 mqttYmlConfig.getSysTopic()
         );
-        // 指定生成的消息应该发送到哪个通道，如果不手动设置入站消息通道，系统也会自动创建 TODO 如果有多个inbound，不能指向同一个消息通道
+        // 指定收到的消息发到哪个通道，如果不显示设置入站消息通道，系统会自动创建 TODO 如果有多个inbound，不能指向同一个消息通道
 //        adapter.setOutputChannel(mqttInboundChannel());
         adapter.setCompletionTimeout(MqttConstant.DEFAULT_COMPLETION_TIMEOUT);
         adapter.setConverter(new DefaultPahoMessageConverter());
@@ -168,7 +168,7 @@ public class MqttSpringIntegration {
 
         messageHandler.setAsync(true);
         messageHandler.setDefaultQos(MqttConstant.QOS_DEFAULT);
-        messageHandler.setDefaultTopic("defaultTopic");
+//        messageHandler.setDefaultTopic("defaultTopic");
         return messageHandler;
     }
 
@@ -196,7 +196,7 @@ public class MqttSpringIntegration {
                  * 消息处理节点endPoint：用于转成业务模型。
                  * 当前重载的参数是GenericHandler，为函数式接口，需用户重写：Object handle(P payload, MessageHeaders headers);
                  *
-                 * 问题：处理后的业务数据以怎样的形式在流中流通？ TODO
+                 * TODO 问题：处理后的业务数据以怎样的形式在流中流通？
                  **/
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
                 /**

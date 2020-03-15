@@ -8,6 +8,7 @@
 package com.scosyf.mqtt.integration.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.scosyf.mqtt.integration.common.entity.Device;
 import com.scosyf.mqtt.integration.common.message.sys.OnlineMessage;
 import com.scosyf.mqtt.integration.common.message.sys.SysMessage;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
@@ -42,6 +43,8 @@ public class SysMessageService {
     /**
      * 记录设备上下线
      *
+     * TODO 如果设备的WIFI模块换了，即mac变了，需要在后台对这台设备进行更换mac，让deviceId和mac重新配对
+     *
      **/
     public Message<String> handleOnOff(SysMessage sysMessage) {
         try {
@@ -57,8 +60,12 @@ public class SysMessageService {
             if (MqttConstant.MAC_LENGTH != mac.length()) {
                 return null;
             }
+            Device device = deviceDao.getByMac(mac);
+            if (device == null) {
+                return null;
+            }
             // 保存设备每次上下线消息
-            deviceOnlineDao.saveOnlineRecord(onlineMessage, mac);
+            deviceOnlineDao.saveOnlineRecord(onlineMessage, device);
             // 设备最近状态
             JSONObject deviceLastStatPayload = null;
             if (onlineMessage.getOnline()) {

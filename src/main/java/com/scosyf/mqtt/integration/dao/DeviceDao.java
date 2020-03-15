@@ -19,6 +19,10 @@ public class DeviceDao {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    public Device getByMac(String mac) {
+        return mongoTemplate.findOne(new Query(Criteria.where("mac").is(mac).and("status").gt(-1)), Device.class);
+    }
+
     public void saveOnline(String clientId, String mac, String ip, String node) {
         // 直接将本次上线信息刷新到设备表中
         UpdateResult upRes = mongoTemplate.updateFirst(
