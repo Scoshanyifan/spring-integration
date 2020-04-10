@@ -27,7 +27,7 @@
 2020-04-10 13:24:01 337 [main] INFO  [INFO] PublishSubscribeChannel: 64 : Channel 'application.errorChannel' has 1 subscriber(s).
 2020-04-10 13:24:01 337 [main] INFO  [INFO] EventDrivenConsumer: 159 : started _org.springframework.integration.errorLogger
 2020-04-10 13:24:05 409 [main] ERROR [ERROR] MqttPahoMessageDrivenChannelAdapter: 264 : Error connecting or subscribing to [$SYS/brokers/+/clients/+/connected, $SYS/brokers/+/clients/+/disconnected]
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -49,7 +49,7 @@ Caused by: java.net.ConnectException: Connection refused: connect
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:84) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	... 8 more
 2020-04-10 13:24:05 435 [main] ERROR [ERROR] MqttPahoMessageDrivenChannelAdapter: 151 : Exception while connecting and subscribing, retrying
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -87,7 +87,7 @@ Caused by: java.net.ConnectException: Connection refused: connect
 2020-04-10 13:24:05 443 [main] INFO  [INFO] DirectChannel: 64 : Channel 'application.sysMsgFlow.channel#4' has 1 subscriber(s).
 2020-04-10 13:24:05 443 [main] INFO  [INFO] EventDrivenConsumer: 159 : started sysMsgFlow.org.springframework.integration.config.ConsumerEndpointFactoryBean#4
 2020-04-10 13:24:09 474 [main] ERROR [ERROR] MqttPahoMessageDrivenChannelAdapter: 264 : Error connecting or subscribing to [kunbu/biz/+/bsc/, kunbu/biz/+/log/, kunbu/biz/+/inf/]
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -109,7 +109,7 @@ Caused by: java.net.ConnectException: Connection refused: connect
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:84) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	... 8 more
 2020-04-10 13:24:09 481 [main] ERROR [ERROR] MqttPahoMessageDrivenChannelAdapter: 151 : Exception while connecting and subscribing, retrying
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -185,9 +185,9 @@ Caused by: java.net.ConnectException: Connection refused: connect
 2020-04-10 13:24:09 526 [main] INFO  [INFO] GatewayProxyFactoryBean$MethodInvocationGateway: 159 : started mqttPublisher
 2020-04-10 13:24:09 527 [main] INFO  [INFO] GatewayProxyFactoryBean: 159 : started mqttPublisher
 2020-04-10 13:24:09 544 [main] INFO  [INFO] MqttTest: 59 : Started MqttTest in 13.243 seconds (JVM running for 14.544)
-2020-04-10 13:24:09 836 [main] INFO  [INFO] PropertiesUtil: 39 : >>> ÅäÖÃÎÄ¼þ-mqtt.properties ¼ÓÔØÍê³É£º{mqtt.username=mqtt-kunbu, mqtt.cleansession=false, mqtt.password=123456, mqtt.host=tcp://127.0.0.1:1883, mqtt.clientid=consumer-publisher}
-2020-04-10 13:24:13 861 [main] ERROR [ERROR] MqttHandler: 97 : >>> IMqttHandler ÏûÏ¢Ó¦ÓÃÁ¬½ÓÒì³£
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+2020-04-10 13:24:09 836 [main] INFO  [INFO] PropertiesUtil: 39 : >>> ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½-mqtt.properties ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É£ï¿½{mqtt.username=mqtt-kunbu, mqtt.cleansession=false, mqtt.password=123456, mqtt.host=tcp://127.0.0.1:1883, mqtt.clientid=consumer-publisher}
+2020-04-10 13:24:13 861 [main] ERROR [ERROR] MqttHandler: 97 : >>> IMqttHandler ï¿½ï¿½Ï¢Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì³£
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -209,13 +209,13 @@ Caused by: java.net.ConnectException: Connection refused: connect
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:84) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	... 8 more
 2020-04-10 13:24:13 932 [main] ERROR [ERROR] MqttHandler: 37 : >>> IMqttHandler push error
-org.eclipse.paho.client.mqttv3.MqttException: ¿Í»§»úÎ´Á¬½Ó
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Í»ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.ExceptionHelper.createMqttException(ExceptionHelper.java:31) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms.sendNoWait(ClientComms.java:199) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.MqttAsyncClient.publish(MqttAsyncClient.java:1355) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.MqttClient.publish(MqttClient.java:583) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
-	at com.scosyf.mqtt.integration.mqtt.paho.MqttHandler.push(MqttHandler.java:35) [classes/:?]
-	at com.scosyf.mqtt.integration.mqtt.paho.MqttHandler.push(MqttHandler.java:25) [classes/:?]
+	at com.scosyf.mqtt.integration.common.mqtt.paho.MqttHandler.push(MqttHandler.java:35) [classes/:?]
+	at com.scosyf.mqtt.integration.common.mqtt.paho.MqttHandler.push(MqttHandler.java:25) [classes/:?]
 	at com.scosyf.mqtt.integration.MqttTest.testMqttHandler(MqttTest.java:20) [test-classes/:?]
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_181]
@@ -355,7 +355,7 @@ org.eclipse.paho.client.mqttv3.MqttException: ¿Í»§»úÎ´Á¬½Ó
 2020-04-10 13:26:09 895 [main] INFO  [INFO] PublishSubscribeChannel: 64 : Channel 'application.errorChannel' has 1 subscriber(s).
 2020-04-10 13:26:09 895 [main] INFO  [INFO] EventDrivenConsumer: 159 : started _org.springframework.integration.errorLogger
 2020-04-10 13:26:13 977 [main] ERROR [ERROR] MqttPahoMessageDrivenChannelAdapter: 264 : Error connecting or subscribing to [$SYS/brokers/+/clients/+/connected, $SYS/brokers/+/clients/+/disconnected]
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -377,7 +377,7 @@ Caused by: java.net.ConnectException: Connection refused: connect
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:84) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	... 8 more
 2020-04-10 13:26:14 037 [main] ERROR [ERROR] MqttPahoMessageDrivenChannelAdapter: 151 : Exception while connecting and subscribing, retrying
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -415,7 +415,7 @@ Caused by: java.net.ConnectException: Connection refused: connect
 2020-04-10 13:26:14 049 [main] INFO  [INFO] DirectChannel: 64 : Channel 'application.sysMsgFlow.channel#4' has 1 subscriber(s).
 2020-04-10 13:26:14 049 [main] INFO  [INFO] EventDrivenConsumer: 159 : started sysMsgFlow.org.springframework.integration.config.ConsumerEndpointFactoryBean#4
 2020-04-10 13:26:18 070 [main] ERROR [ERROR] MqttPahoMessageDrivenChannelAdapter: 264 : Error connecting or subscribing to [kunbu/biz/+/bsc/, kunbu/biz/+/log/, kunbu/biz/+/inf/]
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -437,7 +437,7 @@ Caused by: java.net.ConnectException: Connection refused: connect
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:84) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	... 8 more
 2020-04-10 13:26:18 072 [main] ERROR [ERROR] MqttPahoMessageDrivenChannelAdapter: 151 : Exception while connecting and subscribing, retrying
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -513,9 +513,9 @@ Caused by: java.net.ConnectException: Connection refused: connect
 2020-04-10 13:26:18 096 [main] INFO  [INFO] GatewayProxyFactoryBean$MethodInvocationGateway: 159 : started mqttPublisher
 2020-04-10 13:26:18 096 [main] INFO  [INFO] GatewayProxyFactoryBean: 159 : started mqttPublisher
 2020-04-10 13:26:18 118 [main] INFO  [INFO] MqttTest: 59 : Started MqttTest in 13.68 seconds (JVM running for 14.899)
-2020-04-10 13:26:18 325 [main] INFO  [INFO] PropertiesUtil: 39 : >>> ÅäÖÃÎÄ¼þ-mqtt.properties ¼ÓÔØÍê³É£º{mqtt.username=mqtt-kunbu, mqtt.cleansession=false, mqtt.password=123456, mqtt.host=tcp://127.0.0.1:1883, mqtt.clientid=consumer-publisher}
-2020-04-10 13:26:22 332 [main] ERROR [ERROR] MqttHandler: 97 : >>> IMqttHandler ÏûÏ¢Ó¦ÓÃÁ¬½ÓÒì³£
-org.eclipse.paho.client.mqttv3.MqttException: ÎÞ·¨Á¬½ÓÖÁ·þÎñÆ÷
+2020-04-10 13:26:18 325 [main] INFO  [INFO] PropertiesUtil: 39 : >>> ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½-mqtt.properties ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É£ï¿½{mqtt.username=mqtt-kunbu, mqtt.cleansession=false, mqtt.password=123456, mqtt.host=tcp://127.0.0.1:1883, mqtt.clientid=consumer-publisher}
+2020-04-10 13:26:22 332 [main] ERROR [ERROR] MqttHandler: 97 : >>> IMqttHandler ï¿½ï¿½Ï¢Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì³£
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:94) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms$ConnectBG.run(ClientComms.java:701) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) ~[?:1.8.0_181]
@@ -537,13 +537,13 @@ Caused by: java.net.ConnectException: Connection refused: connect
 	at org.eclipse.paho.client.mqttv3.internal.TCPNetworkModule.start(TCPNetworkModule.java:84) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	... 8 more
 2020-04-10 13:26:22 394 [main] ERROR [ERROR] MqttHandler: 37 : >>> IMqttHandler push error
-org.eclipse.paho.client.mqttv3.MqttException: ¿Í»§»úÎ´Á¬½Ó
+org.eclipse.paho.client.mqttv3.MqttException: ï¿½Í»ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½
 	at org.eclipse.paho.client.mqttv3.internal.ExceptionHelper.createMqttException(ExceptionHelper.java:31) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.internal.ClientComms.sendNoWait(ClientComms.java:199) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.MqttAsyncClient.publish(MqttAsyncClient.java:1355) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
 	at org.eclipse.paho.client.mqttv3.MqttClient.publish(MqttClient.java:583) ~[org.eclipse.paho.client.mqttv3-1.2.0.jar:?]
-	at com.scosyf.mqtt.integration.mqtt.paho.MqttHandler.push(MqttHandler.java:35) [classes/:?]
-	at com.scosyf.mqtt.integration.mqtt.paho.MqttHandler.push(MqttHandler.java:25) [classes/:?]
+	at com.scosyf.mqtt.integration.common.mqtt.paho.MqttHandler.push(MqttHandler.java:35) [classes/:?]
+	at com.scosyf.mqtt.integration.common.mqtt.paho.MqttHandler.push(MqttHandler.java:25) [classes/:?]
 	at com.scosyf.mqtt.integration.MqttTest.testMqttHandler(MqttTest.java:20) [test-classes/:?]
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_181]

@@ -1,23 +1,19 @@
 package com.scosyf.mqtt.integration;
 
 import com.alibaba.fastjson.JSONObject;
-import com.scosyf.mqtt.integration.mqtt.paho.MqttHandler;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import com.scosyf.mqtt.integration.common.mqtt.paho.MqttHandler;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
 public class MqttTest {
 
-    @Test
+//    @Test
     public void testMqttHandler() {
 
         JSONObject cmd = new JSONObject();
         cmd.put("cmd", "2333");
 
-        MqttHandler.getInstance().push("kunbu/linnei/scosyf/inf/", cmd.toJSONString());
+        MqttHandler.getInstance().push("/linnei/1234567890/inf/", cmd.toJSONString());
 
     }
 
