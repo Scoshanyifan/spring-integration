@@ -1,0 +1,37 @@
+server:
+  port: 9090
+
+spring:
+  data:
+    mongodb:
+      uri:
+      port:
+      username:
+      password:
+
+# log4j2
+logging:
+  config: classpath:log4j2.yml
+
+mqtt:
+  # 客户端信息
+  host:
+  username:
+  password:
+  cleansession: false
+  # 如果非localhost，需要在etc/acl.conf中配置规则允许此client获取 $SYS/# 消息
+  clientid: msg-publisher
+  # 业务消息订阅
+  bizclientid: msg-biz-subscriber
+  biztopic:
+  # /linnei/98D863BE7200/query >>> d:rinnai:SR:01:SR:98D863BE7200:03EE
+  - /linnei/+/+
+  # /xio/TYPE01/100160003190810045/up >>> DEV_{deviceType}_{sn}_{Random}
+  - /xio/+/+/+
+  # 系统消息订阅，topic参考 https://github.com/mqtt/mqtt.github.io/wiki/SYS-Topics
+  sysclientid: mis-sys-subscriber
+  systopic:
+  # $SYS/brokers/emqttd-linnei@10.45.33.195/clients/d:rinnai:SR:01:SR:98D863BE7200:03EE/connected
+  - $SYS/brokers/+/clients/+/connected
+  - $SYS/brokers/+/clients/+/disconnected
+

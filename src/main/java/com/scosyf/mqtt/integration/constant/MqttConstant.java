@@ -9,17 +9,20 @@ public interface MqttConstant {
 
     /** ================================= message ===================================== */
     
-    String TOPIC_SPLITTER                           = "/";
+    String TOPIC_SPLITTER                   = "/";
+    String LINNEI_SPLITTER                  = ":";
+    String XIAO_SPLITTER                    = "_";
 
-    String USERNAME_SPLITTER                        = ":";
-
-    int MAC_LENGTH                                  = 12;
-    int PHONE_LENGTH                                = 11;
+    int MAC_LENGTH                          = 12;
+    int PHONE_LENGTH                        = 11;
+    int SN_LENGTH                           = 20;
 
 
     /** ================================= mqtt ===================================== */
 
-    String DEFAULT_TOPIC_PERFIX             = "kunbu";
+    String LINNEI_TOPIC_PERFIX              = "linnei";
+    String XIO_TOPIC_PERFIX                 = "xio";
+
     /** 消息应用保留用的topic */
     String RETAIN_TOPIC_SUFFIX              = "retain";
 

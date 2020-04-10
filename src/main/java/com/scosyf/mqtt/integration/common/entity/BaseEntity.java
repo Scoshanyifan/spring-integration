@@ -2,12 +2,14 @@ package com.scosyf.mqtt.integration.common.entity;
 
 import org.springframework.data.annotation.Id;
 
+import java.io.Serializable;
+
 /**
  * @project: spring-integration
  * @author: kunbu
  * @create: 2019-12-17 18:07
  **/
-public abstract class BaseEntity {
+public abstract class BaseEntity implements Serializable {
 
     @Id
     private String id;
@@ -22,7 +24,7 @@ public abstract class BaseEntity {
 
     @Override
     public String toString() {
-        return "BaseEntity{" +
+        return "{" +
                 "id='" + id + '\'' +
                 '}';
     }

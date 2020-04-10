@@ -1,11 +1,11 @@
 package com.scosyf.mqtt.integration.mqtt;
 
-import com.scosyf.mqtt.integration.common.message.biz.BizMessage;
+import com.scosyf.mqtt.integration.common.message.xio.RawMessage;
 import com.scosyf.mqtt.integration.config.MqttYmlConfig;
-import com.scosyf.mqtt.integration.constant.BizMsgTypeEnum;
 import com.scosyf.mqtt.integration.constant.MqttConstant;
-import com.scosyf.mqtt.integration.utils.ExecutorFactoryUtil;
-import com.scosyf.mqtt.integration.utils.MessageTransferUtil;
+import com.scosyf.mqtt.integration.constant.TopicTypeEnum;
+import com.scosyf.mqtt.integration.util.ExecutorFactoryUtil;
+import com.scosyf.mqtt.integration.util.MessageTransferUtil;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +117,11 @@ public class MqttSpringIntegration {
                 mqttClientFactory(),
                 mqttYmlConfig.getSysTopic()
         );
-        // 指定生成的消息应该发送到哪个通道，如果不手动设置入站消息通道，系统也会自动创建 TODO 如果有多个inbound，不能指向同一个消息通道
+        /**
+         * TODO 如果有多个inbound，不能指向同一个消息通道，否则流from时会拿到各种来源的消息
+         *
+         * 指定生成的消息应该发送到哪个通道，如果不手动设置入站消息通道，系统也会自动创建
+         **/
 //        adapter.setOutputChannel(mqttInboundChannel());
         adapter.setCompletionTimeout(MqttConstant.DEFAULT_COMPLETION_TIMEOUT);
         adapter.setConverter(new DefaultPahoMessageConverter());
@@ -196,7 +200,7 @@ public class MqttSpringIntegration {
                  * 消息处理节点endPoint：用于转成业务模型。
                  * 当前重载的参数是GenericHandler，为函数式接口，需用户重写：Object handle(P payload, MessageHeaders headers);
                  *
-                 * 问题：处理后的业务数据以怎样的形式在流中流通？ TODO
+                 * 处理后的业务数据以怎样的形式在流中流通：GenericMessage（具体可参考adapter接收消息之后的流程）
                  **/
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
                 /**
@@ -222,43 +226,47 @@ public class MqttSpringIntegration {
         return IntegrationFlows
                 .from(bizInbound())
                 .channel(channels -> channels.executor(ExecutorFactoryUtil.buildBizExecutor()))
-                .handle(MessageTransferUtil::mqttMessage2BizMessage)
-                /**
-                 * 消息节点
-                 * 通过route路由来分流，依据msgType，走不同的消息处理（subFlow子流）
-                 *
-                 **/
-                .<BizMessage, BizMsgTypeEnum>route(
-                        BizMessage::getBizMsgTypeEnum,
-                        routerSpec -> routerSpec
-                                .subFlowMapping(BizMsgTypeEnum.J00, J00IntegrationFlow())
-                                .subFlowMapping(BizMsgTypeEnum.J05, J05IntegrationFlow())
-                                .subFlowMapping(BizMsgTypeEnum.JER, JERIntegrationFlow())
-                                .subFlowMapping(BizMsgTypeEnum.NA, errorFlow())
-//                                .channelMapping(BizMsgTypeEnum.JER, "channel") // channelMapping是什么作用 TODO
+                /** 处理Json消息 */
+//                .handle(MessageTransferUtil::mqttMessage2BizMessage)
+//                /**
+//                 * 消息节点：通过route路由来分流，依据msgType，走不同的消息处理（subFlow子流）
+//                 **/
+//                .<BizMessage, LinBizTypeEnum>route(
+//                        BizMessage::getBizMsgTypeEnum,
+//                        routerSpec -> routerSpec
+//                                .subFlowMapping(LinBizTypeEnum.J00, flow -> flow
+//                                        .handle("j00Service", "handleDeviceInfo")
+//                                        .filter(Objects::nonNull)
+//                                        .handle(mqttOutbound()))
+//                                .subFlowMapping(LinBizTypeEnum.J05, flow -> flow
+//                                        .handle("j00Service", "handleDeviceInfo")
+//                                        .filter(Objects::nonNull)
+//                                        .handle(mqttOutbound()))
+//                                .subFlowMapping(LinBizTypeEnum.JER, flow -> flow
+//                                        .handle( "jerService", "handleError")
+//                                        .filter(Objects::nonNull)
+//                                        .handle(mqttOutbound()))
+//                                // TODO channelMapping是什么作用
+////                                .channelMapping(LinBizTypeEnum.JER, "channel")
+//                                .defaultOutputToParentFlow()
+//                )
+//                .get();
+                /** 处理原生消息 */
+                .handle(MessageTransferUtil::mqttMessage2RawMessage)
+                .<RawMessage, TopicTypeEnum>route(
+                        RawMessage::getTopicTypeEnum,
+                        mapping -> mapping
+                                .subFlowMapping(TopicTypeEnum.up, sf -> sf
+                                        .handle("upService", "handleUp")
+                                        .filter(Objects::nonNull)
+                                        .handle(mqttOutbound()))
+                                .subFlowMapping(TopicTypeEnum.query, sf -> sf
+                                        .handle("queryService", "handleQuery")
+                                        .filter(Objects::nonNull)
+                                        .handle(mqttOutbound()))
                                 .defaultOutputToParentFlow()
                 )
                 .get();
     }
 
-    private IntegrationFlow J00IntegrationFlow() {
-        return flow -> flow
-                .handle("j00Service", "handleDeviceInfo");
-    }
-
-    private IntegrationFlow J05IntegrationFlow() {
-        return flow -> flow
-                .handle("j00Service", "handleDeviceInfo");
-    }
-
-    private IntegrationFlow JERIntegrationFlow() {
-        return flow -> flow.
-                handle("jerService", "handleError");
-
-    }
-
-    private IntegrationFlow errorFlow() {
-        return flow -> flow
-                .handle("naService", "handleNA");
-    }
 }

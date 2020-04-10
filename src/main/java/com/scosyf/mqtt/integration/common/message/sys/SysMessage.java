@@ -1,7 +1,6 @@
 package com.scosyf.mqtt.integration.common.message.sys;
 
 import com.scosyf.mqtt.integration.common.message.AbstractMessage;
-import com.scosyf.mqtt.integration.constant.SysMsgTypeEnum;
 
 /**
  *
@@ -34,20 +33,13 @@ public abstract class SysMessage extends AbstractMessage {
      **/
     public static final String DISCONNECTED     = "disconnected";
 
-    private SysMsgTypeEnum sysMsgTypeEnum;
+    private String[] clientItems;
 
-    public SysMsgTypeEnum getSysMsgTypeEnum() {
-        return sysMsgTypeEnum;
+    public String[] getClientItems() {
+        return clientItems;
     }
 
-    public void setSysMsgTypeEnum(SysMsgTypeEnum sysMsgTypeEnum) {
-        this.sysMsgTypeEnum = sysMsgTypeEnum;
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-                "sysMsgTypeEnum=" + sysMsgTypeEnum +
-                '}';
+    public void setClientItems(String[] clientItems) {
+        this.clientItems = clientItems;
     }
 }
