@@ -13,7 +13,11 @@ public class DeviceOnlineRecord extends BaseEntity {
 
     private String mac;
     private String clientId;
-    /** 保存deviceId是因为有可能这个mac会在不同的设备上 */
+    /**
+     * 需求：查过期设备的在离线记录
+     * 解决：如果只根据mac差，有可能这个mac会在新的的设备上了，所以要根据deviceId查当时的设备
+     *
+     **/
     private String deviceId;
     private Boolean online;
     private String onlineIp;
