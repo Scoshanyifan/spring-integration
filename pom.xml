@@ -11,7 +11,7 @@
     <groupId>com.scosyf.mqtt</groupId>
     <artifactId>spring-integration</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>spring-integration</name>
     <description>Demo project for Spring Boot</description>
 
@@ -109,7 +109,7 @@
         </dependency>
 
 
-        <!--    utils   -->
+        <!--    util   -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
@@ -131,16 +131,47 @@
             <version>${com.alibaba.version}</version>
         </dependency>
 
-
     </dependencies>
 
     <build>
+        <finalName>kunbu-spring-integration</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources/${profile-active}</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!-- 跳过test -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <profile-active>local</profile-active>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profile-active>prod</profile-active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
 
 </project>

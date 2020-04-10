@@ -20,7 +20,7 @@ public class MqttPropertyConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
 
-    public static final String PROPERTIES_CONFIG = "mqtt.properties";
+    public static final String PROPERTIES_CONFIG = "test/mqtt.properties";
 
     private static Map<String, String> kvMap = new HashMap<>();
 

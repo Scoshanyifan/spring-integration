@@ -1,5 +1,7 @@
 package com.scosyf.mqtt.integration.common.entity;
 
+import org.springframework.data.mongodb.core.index.IndexDirection;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -7,29 +9,40 @@ import java.util.Date;
 /**
  * 设备上下线记录
  *
+ * @author kunbu
  **/
-@Document(collection = "deviceOnlineRecord")
+@Document(collection = "device_online_record")
 public class DeviceOnlineRecord extends BaseEntity {
 
     private String mac;
+    private String sn;
     private String clientId;
     /**
      * 需求：查过期设备的在离线记录
-     * 解决：如果只根据mac差，有可能这个mac会在新的的设备上了，所以要根据deviceId查当时的设备
+     * 解决：如果只根据mac查，有可能这个mac会在新的的设备上了，所以要根据bizId查当时的设备
      *
      **/
-    private String deviceId;
+    private String bizId;
     private Boolean online;
     private String onlineIp;
     private String offlineReason;
+    @Indexed(direction = IndexDirection.DESCENDING)
     private Date timeStamp;
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getSn() {
+        return sn;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
+
+    public String getBizId() {
+        return bizId;
+    }
+
+    public void setBizId(String bizId) {
+        this.bizId = bizId;
     }
 
     public String getMac() {
@@ -84,8 +97,9 @@ public class DeviceOnlineRecord extends BaseEntity {
     public String toString() {
         return "DeviceOnlineRecord{" +
                 "mac='" + mac + '\'' +
+                ", sn='" + sn + '\'' +
                 ", clientId='" + clientId + '\'' +
-                ", deviceId='" + deviceId + '\'' +
+                ", bizId='" + bizId + '\'' +
                 ", online=" + online +
                 ", onlineIp='" + onlineIp + '\'' +
                 ", offlineReason='" + offlineReason + '\'' +

@@ -18,6 +18,8 @@ package com.scosyf.mqtt.integration.common.message.sys;
  *      ts":1576829710
  * }
  *
+ * @author kunbu
+ *
  **/
 public class OnlineMessage extends SysMessage {
 
