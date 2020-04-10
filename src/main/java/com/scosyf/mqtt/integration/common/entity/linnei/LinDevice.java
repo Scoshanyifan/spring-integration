@@ -32,6 +32,7 @@ public class LinDevice extends BaseEntity {
     private Boolean bind;
     private Boolean add;
     private String wifiSoftVersion;
+    private Integer status;
     @Indexed(direction = IndexDirection.DESCENDING)
     private Date createTime;
     private Date updateTime;
@@ -182,6 +183,14 @@ public class LinDevice extends BaseEntity {
         this.node = node;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "LinDevice{" +
@@ -192,6 +201,7 @@ public class LinDevice extends BaseEntity {
                 ", bind=" + bind +
                 ", add=" + add +
                 ", wifiSoftVersion='" + wifiSoftVersion + '\'' +
+                ", status=" + status +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", online=" + online +

@@ -35,6 +35,10 @@ public class DeviceDao {
         mongoTemplate.save(record);
     }
 
+    public LinDevice getByMac(String mac) {
+        return mongoTemplate.findOne(new Query(Criteria.where("mac").is(mac).and("status").gt(-1)), LinDevice.class);
+    }
+
     public boolean saveOnline(String clientId, String mac, String ip, String node) {
         // 直接将本次上线信息刷新到设备表中
         UpdateResult upRes = mongoTemplate.updateFirst(
@@ -78,8 +82,6 @@ public class DeviceDao {
             return false;
         }
     }
-
-
 
 
 }

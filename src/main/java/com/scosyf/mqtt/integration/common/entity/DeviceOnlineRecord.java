@@ -17,6 +17,8 @@ public class DeviceOnlineRecord extends BaseEntity {
     private String mac;
     private String sn;
     private String clientId;
+    /** 保存deviceId是因为有可能这个mac会在不同的设备上 */
+    private String deviceId;
     private Boolean online;
     private String onlineIp;
     private String offlineReason;
@@ -29,6 +31,14 @@ public class DeviceOnlineRecord extends BaseEntity {
 
     public void setSn(String sn) {
         this.sn = sn;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getMac() {
@@ -85,6 +95,7 @@ public class DeviceOnlineRecord extends BaseEntity {
                 "mac='" + mac + '\'' +
                 ", sn='" + sn + '\'' +
                 ", clientId='" + clientId + '\'' +
+                ", deviceId='" + deviceId + '\'' +
                 ", online=" + online +
                 ", onlineIp='" + onlineIp + '\'' +
                 ", offlineReason='" + offlineReason + '\'' +

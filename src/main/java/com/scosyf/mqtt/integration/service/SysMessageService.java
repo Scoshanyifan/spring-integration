@@ -9,6 +9,7 @@ package com.scosyf.mqtt.integration.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.scosyf.mqtt.integration.common.entity.linnei.LinDevice;
 import com.scosyf.mqtt.integration.common.message.sys.OnlineMessage;
 import com.scosyf.mqtt.integration.common.message.sys.SysMessage;
 import com.scosyf.mqtt.integration.constant.ClientTypeEnum;
@@ -44,6 +45,8 @@ public class SysMessageService {
 
     /**
      * 记录设备上下线
+     *
+     * TODO 如果设备的WIFI模块换了，即mac变了，需要在后台对这台设备进行更换mac，让deviceId和mac重新配对
      *
      **/
     public Message<String> handleOnOff(SysMessage sysMessage) {

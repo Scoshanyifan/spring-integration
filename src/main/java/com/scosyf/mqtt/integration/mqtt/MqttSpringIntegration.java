@@ -117,6 +117,7 @@ public class MqttSpringIntegration {
                 mqttClientFactory(),
                 mqttYmlConfig.getSysTopic()
         );
+
         /**
          * TODO 如果有多个inbound，不能指向同一个消息通道，否则流from时会拿到各种来源的消息
          *
@@ -172,7 +173,7 @@ public class MqttSpringIntegration {
 
         messageHandler.setAsync(true);
         messageHandler.setDefaultQos(MqttConstant.QOS_DEFAULT);
-        messageHandler.setDefaultTopic("defaultTopic");
+//        messageHandler.setDefaultTopic("defaultTopic");
         return messageHandler;
     }
 
@@ -200,7 +201,11 @@ public class MqttSpringIntegration {
                  * 消息处理节点endPoint：用于转成业务模型。
                  * 当前重载的参数是GenericHandler，为函数式接口，需用户重写：Object handle(P payload, MessageHeaders headers);
                  *
+<<<<<<< HEAD
                  * 处理后的业务数据以怎样的形式在流中流通：GenericMessage（具体可参考adapter接收消息之后的流程）
+=======
+                 * TODO 问题：处理后的业务数据以怎样的形式在流中流通？
+>>>>>>> 893d2cf4496a860008852b092c65ffba4d394a4f
                  **/
                 .handle(MessageTransferUtil::mqttMessage2SysMessage)
                 /**
