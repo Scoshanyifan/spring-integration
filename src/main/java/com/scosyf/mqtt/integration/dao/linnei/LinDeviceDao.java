@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.dao;
+package com.scosyf.mqtt.integration.dao.linnei;
 
 import com.mongodb.client.result.UpdateResult;
 import com.scosyf.mqtt.integration.common.entity.DeviceOnlineRecord;
@@ -16,27 +16,24 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 
 @Repository
-public class DeviceDao {
+public class LinDeviceDao {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceDao.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinDeviceDao.class);
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public void saveOnlineRecord(OnlineMessage message, String mac) {
+    public void saveOnlineRecord(OnlineMessage message, String mac, String bizId) {
         DeviceOnlineRecord record = new DeviceOnlineRecord();
         record.setOnline(message.getOnline());
         record.setClientId(message.getClientId());
         record.setMac(mac);
+        record.setBizId(bizId);
         record.setOnlineIp(message.getIpAddress());
         record.setOfflineReason(message.getReason());
         record.setTimeStamp(new Date());
 
         mongoTemplate.save(record);
-    }
-
-    public LinDevice getByMac(String mac) {
-        return mongoTemplate.findOne(new Query(Criteria.where("mac").is(mac).and("status").gt(-1)), LinDevice.class);
     }
 
     public boolean saveOnline(String clientId, String mac, String ip, String node) {
@@ -83,5 +80,9 @@ public class DeviceDao {
         }
     }
 
+
+    public LinDevice getByMac(String mac) {
+        return mongoTemplate.findOne(new Query(Criteria.where("mac").is(mac).and("status").gt(-1)), LinDevice.class);
+    }
 
 }

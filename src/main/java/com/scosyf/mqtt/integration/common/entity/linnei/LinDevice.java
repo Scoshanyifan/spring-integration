@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 
 /**
- *
+ * 林内设备信息都在整合在一起，不像xio是分开的
  *
  * @author kunbu
  **/

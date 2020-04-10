@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.dao;
+package com.scosyf.mqtt.integration.dao.xio;
 
 import com.scosyf.mqtt.integration.common.dto.xio.LiftStatDto;
 import com.scosyf.mqtt.integration.common.entity.xio.LiftStat;

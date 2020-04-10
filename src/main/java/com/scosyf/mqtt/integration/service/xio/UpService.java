@@ -7,7 +7,7 @@ import com.scosyf.mqtt.integration.common.dto.xio.LiftOuterInfo;
 import com.scosyf.mqtt.integration.common.dto.xio.LiftStatDto;
 import com.scosyf.mqtt.integration.common.message.xio.RawMessage;
 import com.scosyf.mqtt.integration.constant.xio.LiftStateTypeEnum;
-import com.scosyf.mqtt.integration.dao.LiftStatDao;
+import com.scosyf.mqtt.integration.dao.xio.LiftStatDao;
 import com.scosyf.mqtt.integration.util.MsgUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
