@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.online;
+package com.scosyf.mqtt.integration.common.online;
 
 import com.scosyf.mqtt.integration.common.base.BaseEntity;
 import org.springframework.data.mongodb.core.index.IndexDirection;

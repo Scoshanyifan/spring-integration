@@ -6,8 +6,8 @@ import com.scosyf.mqtt.integration.linnei.common.message.BizMessage;
 import com.scosyf.mqtt.integration.linnei.common.message.J00Message;
 import com.scosyf.mqtt.integration.linnei.common.message.J05Message;
 import com.scosyf.mqtt.integration.linnei.common.message.JERMessage;
-import com.scosyf.mqtt.integration.online.OnlineMessage;
-import com.scosyf.mqtt.integration.online.SysMessage;
+import com.scosyf.mqtt.integration.common.online.OnlineMessage;
+import com.scosyf.mqtt.integration.common.online.SysMessage;
 import com.scosyf.mqtt.integration.xiao.common.message.RawMessage;
 import com.scosyf.mqtt.integration.common.constant.MqttConstant;
 import com.scosyf.mqtt.integration.common.constant.TopicTypeEnum;
@@ -110,7 +110,7 @@ public class MessageTransferUtil {
             // /linnei/{mac}/query
             String[] topicItems = headers.get(MqttHeaders.RECEIVED_TOPIC).toString().split(MqttConstant.TOPIC_SPLITTER);
             bizMessage.setTopicItems(topicItems);
-            bizMessage.setBizId(topicItems[topicItems.length - 2]);
+            bizMessage.setMac(topicItems[topicItems.length - 2]);
             // deviceType
             String dt = bizMessage.getDt().toUpperCase();
             LinDeviceTypeEnum linDeviceTypeEnum = LinDeviceTypeEnum.of(dt);

@@ -5,7 +5,7 @@
  * Date:2018/11/610:54 AM
  * Copyright (c) 2018, 海大物联科技有限公司版权所有.
  */
-package com.scosyf.mqtt.integration.online;
+package com.scosyf.mqtt.integration.common.online;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;

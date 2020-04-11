@@ -1,9 +1,9 @@
 package com.scosyf.mqtt.integration.linnei.dao;
 
 import com.mongodb.client.result.UpdateResult;
-import com.scosyf.mqtt.integration.online.DeviceOnlineRecord;
+import com.scosyf.mqtt.integration.common.online.DeviceOnlineRecord;
 import com.scosyf.mqtt.integration.linnei.common.entity.LinDevice;
-import com.scosyf.mqtt.integration.online.OnlineMessage;
+import com.scosyf.mqtt.integration.common.online.OnlineMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -41,7 +41,7 @@ public class J00MessageService {
 
     private LinDevice convert2Device(J00Message j00Message) {
         LinDevice linDevice = new LinDevice();
-        linDevice.setMac(j00Message.getBizId());
+        linDevice.setMac(j00Message.getMac());
         linDevice.setDeviceType(j00Message.getDeviceType().name());
         linDevice.setProductType(j00Message.getDeviceType().getProductType());
 

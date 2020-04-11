@@ -1,9 +1,9 @@
 package com.scosyf.mqtt.integration.xiao.dao;
 
 import com.mongodb.client.result.UpdateResult;
-import com.scosyf.mqtt.integration.online.DeviceOnlineRecord;
+import com.scosyf.mqtt.integration.common.online.DeviceOnlineRecord;
 import com.scosyf.mqtt.integration.xiao.common.entity.XioDevice;
-import com.scosyf.mqtt.integration.online.OnlineMessage;
+import com.scosyf.mqtt.integration.common.online.OnlineMessage;
 import com.scosyf.mqtt.integration.linnei.dao.LinDeviceDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

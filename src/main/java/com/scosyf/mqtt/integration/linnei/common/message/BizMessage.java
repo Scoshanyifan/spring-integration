@@ -25,7 +25,7 @@ public abstract class BizMessage extends AbstractMessage {
     private LinBizTypeEnum bizMsgTypeEnum;
     private LinDeviceTypeEnum deviceType;
     /** 业务识别码（mac） */
-    private String bizId;
+    private String mac;
 
     public String getLt() {
         return lt;
@@ -67,12 +67,12 @@ public abstract class BizMessage extends AbstractMessage {
         this.deviceType = deviceType;
     }
 
-    public String getBizId() {
-        return bizId;
+    public String getMac() {
+        return mac;
     }
 
-    public void setBizId(String bizId) {
-        this.bizId = bizId;
+    public void setMac(String mac) {
+        this.mac = mac;
     }
 
     @Override
@@ -83,7 +83,7 @@ public abstract class BizMessage extends AbstractMessage {
                 ", lt='" + lt + '\'' +
                 ", bizMsgTypeEnum=" + bizMsgTypeEnum +
                 ", deviceType=" + deviceType +
-                ", bizId='" + bizId + '\'' +
+                ", mac='" + mac + '\'' +
                 "} " + super.toString();
     }
 }

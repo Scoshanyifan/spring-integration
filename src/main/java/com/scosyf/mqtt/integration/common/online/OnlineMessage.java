@@ -1,4 +1,4 @@
-package com.scosyf.mqtt.integration.online;
+package com.scosyf.mqtt.integration.common.online;
 
 /**
  * payload:{
