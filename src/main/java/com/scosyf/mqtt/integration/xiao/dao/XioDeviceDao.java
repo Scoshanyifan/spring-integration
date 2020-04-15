@@ -22,7 +22,7 @@ import java.util.Date;
  * @create: 2020-04-10 18:35
  **/
 @Repository
-public class XioDiviceDao {
+public class XioDeviceDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LinDeviceDao.class);
 

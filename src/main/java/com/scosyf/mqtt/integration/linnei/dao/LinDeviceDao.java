@@ -81,7 +81,7 @@ public class LinDeviceDao {
     }
 
     public LinDevice getByMac(String mac) {
-        return mongoTemplate.findOne(new Query(Criteria.where("mac").is(mac).and("status").gt(-1)), LinDevice.class);
+        return mongoTemplate.findOne(new Query(Criteria.where(LinDevice.MAC).is(mac).and(LinDevice.STATUS).gt(-1)), LinDevice.class);
     }
 
 }

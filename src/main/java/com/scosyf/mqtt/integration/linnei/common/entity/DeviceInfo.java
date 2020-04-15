@@ -1,11 +1,13 @@
 package com.scosyf.mqtt.integration.linnei.common.entity;
 
+import java.io.Serializable;
+
 /**
  * @project: spring-integration
  * @author: kunbu
  * @create: 2019-12-21 17:37
  **/
-public class DeviceInfo {
+public class DeviceInfo implements Serializable {
 
     private String operationMode;
     private String temperatureUnit;

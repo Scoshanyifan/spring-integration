@@ -7,7 +7,6 @@ import com.scosyf.mqtt.integration.linnei.common.message.J00Message;
 import com.scosyf.mqtt.integration.linnei.common.message.J05Message;
 import com.scosyf.mqtt.integration.linnei.common.message.JERMessage;
 import com.scosyf.mqtt.integration.common.online.OnlineMessage;
-import com.scosyf.mqtt.integration.common.online.SysMessage;
 import com.scosyf.mqtt.integration.xiao.common.message.RawMessage;
 import com.scosyf.mqtt.integration.common.constant.MqttConstant;
 import com.scosyf.mqtt.integration.common.constant.TopicTypeEnum;
@@ -32,7 +31,7 @@ public class MessageTransferUtil {
      * 转换为系统消息模型，以xio为例
      *
      **/
-    public static SysMessage mqttMessage2SysMessage(String payload, Map<String, Object> headers) {
+    public static OnlineMessage mqttMessage2OnlineMessage(String payload, Map<String, Object> headers) {
         LOGGER.info("received sys message, header >>> {}, payload >>> {}", headers, payload);
         try {
             // $SYS/brokers/emq-xiao3@10.45.33.195/clients/DEV_TYPE01_100160003190810045_0045/disconnected
@@ -40,7 +39,7 @@ public class MessageTransferUtil {
             String[] topicItems = headers.get(MqttHeaders.RECEIVED_TOPIC).toString().split(MqttConstant.TOPIC_SPLITTER);
             // 检查是否为上下线消息
             String lastTopicItem = topicItems[topicItems.length - 1];
-            if (SysMessage.CONNECTED.equals(lastTopicItem) || SysMessage.DISCONNECTED.equals(lastTopicItem)) {
+            if (OnlineMessage.CONNECTED.equals(lastTopicItem) || OnlineMessage.DISCONNECTED.equals(lastTopicItem)) {
                 OnlineMessage online = new OnlineMessage();
                 online.setTopicItems(topicItems);
 
@@ -54,7 +53,7 @@ public class MessageTransferUtil {
 
                 online.setUserName(payloadJson.getString(OnlineMessage.PAYLOAD_USERNAME));
                 online.setTimeStamp(payloadJson.getString(OnlineMessage.PAYLOAD_TIMPSTAMP));
-                if (lastTopicItem.equals(SysMessage.CONNECTED)) {
+                if (lastTopicItem.equals(OnlineMessage.CONNECTED)) {
                     online.setOnline(true);
                     online.setCleanSession(payloadJson.getString(OnlineMessage.PAYLOAD_CLEANSESSION));
                     online.setIpAddress(payloadJson.getString(OnlineMessage.PAYLOAD_IPADDRESS));
@@ -70,7 +69,7 @@ public class MessageTransferUtil {
                 return null;
             }
         } catch (Exception e) {
-            LOGGER.error(">>> mqttMessage2SysMessage 系统消息转换异常", e);
+            LOGGER.error(">>> mqttMessage2OnlineMessage 系统消息转换异常", e);
             return null;
         }
     }

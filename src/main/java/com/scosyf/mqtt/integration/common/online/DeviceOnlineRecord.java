@@ -1,6 +1,6 @@
 package com.scosyf.mqtt.integration.common.online;
 
-import com.scosyf.mqtt.integration.common.base.BaseEntity;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,8 +13,10 @@ import java.util.Date;
  * @author kunbu
  **/
 @Document(collection = "device_online_record")
-public class DeviceOnlineRecord extends BaseEntity {
+public class DeviceOnlineRecord {
 
+    @Id
+    private String id;
     private String mac;
     private String sn;
     private String clientId;
@@ -29,6 +31,14 @@ public class DeviceOnlineRecord extends BaseEntity {
     private String offlineReason;
     @Indexed(direction = IndexDirection.DESCENDING)
     private Date timeStamp;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getSn() {
         return sn;
@@ -97,7 +107,8 @@ public class DeviceOnlineRecord extends BaseEntity {
     @Override
     public String toString() {
         return "DeviceOnlineRecord{" +
-                "mac='" + mac + '\'' +
+                "id='" + id + '\'' +
+                ", mac='" + mac + '\'' +
                 ", sn='" + sn + '\'' +
                 ", clientId='" + clientId + '\'' +
                 ", bizId='" + bizId + '\'' +
@@ -105,6 +116,6 @@ public class DeviceOnlineRecord extends BaseEntity {
                 ", onlineIp='" + onlineIp + '\'' +
                 ", offlineReason='" + offlineReason + '\'' +
                 ", timeStamp=" + timeStamp +
-                "} " + super.toString();
+                '}';
     }
 }

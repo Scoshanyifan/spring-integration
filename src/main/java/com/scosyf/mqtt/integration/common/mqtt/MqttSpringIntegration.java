@@ -218,11 +218,11 @@ public class MqttSpringIntegration {
                  *
                  * 处理后的业务数据以怎样的形式在流中流通：GenericMessage（具体可参考adapter接收消息之后的流程）
                  **/
-                .handle(MessageTransferUtil::mqttMessage2SysMessage)
+                .handle(MessageTransferUtil::mqttMessage2OnlineMessage)
                 /**
                  * 消息处理节点endPoint：对上下线消息进行记录处理（如果以后有其他需求，可以选择route）
                  **/
-                .handle("sysMsgService", "handleOnOff")
+                .handle("onlineService", "handleOnOff")
                 /**
                  * 消息处理节点endPoint：判断消息是否为空
                  **/

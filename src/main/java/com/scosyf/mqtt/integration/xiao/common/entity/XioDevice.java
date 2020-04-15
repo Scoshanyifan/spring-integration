@@ -1,6 +1,6 @@
 package com.scosyf.mqtt.integration.xiao.common.entity;
 
-import com.scosyf.mqtt.integration.common.base.BaseEntity;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,8 +13,10 @@ import java.util.Date;
  * @create: 2020-04-10 15:48
  **/
 @Document(collection = "lin_device")
-public class XioDevice extends BaseEntity {
+public class XioDevice {
 
+    @Id
+    private String id;
     private String sn;
     /** 冗余，业务数据中的设备id */
     private String bizId;
@@ -28,6 +30,14 @@ public class XioDevice extends BaseEntity {
     private Date lastOfflineTime;
     @Indexed(direction = IndexDirection.DESCENDING)
     private Date createTime;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getSn() {
         return sn;
@@ -112,7 +122,8 @@ public class XioDevice extends BaseEntity {
     @Override
     public String toString() {
         return "XioDevice{" +
-                "sn='" + sn + '\'' +
+                "id='" + id + '\'' +
+                ", sn='" + sn + '\'' +
                 ", bizId='" + bizId + '\'' +
                 ", password='" + password + '\'' +
                 ", clientId='" + clientId + '\'' +
@@ -122,6 +133,6 @@ public class XioDevice extends BaseEntity {
                 ", lastOnlineTime=" + lastOnlineTime +
                 ", lastOfflineTime=" + lastOfflineTime +
                 ", createTime=" + createTime +
-                "} " + super.toString();
+                '}';
     }
 }

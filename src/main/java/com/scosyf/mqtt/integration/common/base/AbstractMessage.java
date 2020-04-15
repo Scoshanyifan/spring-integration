@@ -18,6 +18,12 @@ public abstract class AbstractMessage {
      */
     private String[] topicItems;
 
+    /**
+     * DEV:TYPE01_100160003190810045_0045
+     *
+     **/
+    private String[] clientItems;
+
     TopicTypeEnum topicTypeEnum;
 
     public String[] getTopicItems() {
@@ -36,10 +42,19 @@ public abstract class AbstractMessage {
         this.topicTypeEnum = topicTypeEnum;
     }
 
+    public String[] getClientItems() {
+        return clientItems;
+    }
+
+    public void setClientItems(String[] clientItems) {
+        this.clientItems = clientItems;
+    }
+
     @Override
     public String toString() {
         return "AbstractMessage{" +
                 "topicItems=" + Arrays.toString(topicItems) +
+                ", clientItems=" + Arrays.toString(clientItems) +
                 ", topicTypeEnum=" + topicTypeEnum +
                 '}';
     }

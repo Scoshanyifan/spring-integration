@@ -1,6 +1,6 @@
 package com.scosyf.mqtt.integration.linnei.common.entity;
 
-import com.scosyf.mqtt.integration.common.base.BaseEntity;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,14 +8,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 
 /**
- * 林内设备信息都在整合在一起，不像xio是分开的
+ * 林内设备的业务信息和在离线信息是整合在一起，不像xio是分开的
  *
  * @author kunbu
  **/
 @Document(collection = "lin_device")
-public class LinDevice extends BaseEntity {
+public class LinDevice {
 
     public static final String MAC                      = "mac";
+    public static final String STATUS                   = "status";
     public static final String CLIENT_ID                = "clientId";
     public static final String IP                       = "lastOnlineIp";
     public static final String NODE                     = "node";
@@ -25,6 +26,8 @@ public class LinDevice extends BaseEntity {
     public static final String TOTAL_ONLINE_TIME        = "totalOnlineTime";
 
     /** 基础信息 */
+    @Id
+    private String id;
     private String mac;
     private String password;
     private String deviceType;
@@ -46,6 +49,14 @@ public class LinDevice extends BaseEntity {
     private Long totalOnlineTime;
     /** 统计信息 */
     private DeviceInfo deviceInfo;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getMac() {
         return mac;
@@ -194,7 +205,8 @@ public class LinDevice extends BaseEntity {
     @Override
     public String toString() {
         return "LinDevice{" +
-                "mac='" + mac + '\'' +
+                "id='" + id + '\'' +
+                ", mac='" + mac + '\'' +
                 ", password='" + password + '\'' +
                 ", deviceType='" + deviceType + '\'' +
                 ", productType=" + productType +
@@ -212,6 +224,6 @@ public class LinDevice extends BaseEntity {
                 ", lastOfflineTime=" + lastOfflineTime +
                 ", totalOnlineTime=" + totalOnlineTime +
                 ", deviceInfo=" + deviceInfo +
-                "} " + super.toString();
+                '}';
     }
 }

@@ -1,6 +1,6 @@
 /**
  * Project Name:rinnai-mqtt
- * File Name:SysMessageService
+ * File Name:OnlineMessageService
  * Package Name:com.bugull.mqtt.integration.service
  * Date:2018/11/610:54 AM
  * Copyright (c) 2018, 海大物联科技有限公司版权所有.
@@ -16,7 +16,7 @@ import com.scosyf.mqtt.integration.common.constant.MqttConstant;
 import com.scosyf.mqtt.integration.common.constant.TopicTypeEnum;
 import com.scosyf.mqtt.integration.xiao.common.constant.XioDeviceTypeEnum;
 import com.scosyf.mqtt.integration.linnei.dao.LinDeviceDao;
-import com.scosyf.mqtt.integration.xiao.dao.XioDiviceDao;
+import com.scosyf.mqtt.integration.xiao.dao.XioDeviceDao;
 import com.scosyf.mqtt.integration.common.mqtt.MqttPublisher;
 import com.scosyf.mqtt.integration.xiao.util.MsgUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,16 +34,16 @@ import java.util.List;
  *
  * @author kunbu
  */
-@Component("sysMsgService")
-public class SysMessageService {
+@Component("onlineService")
+public class OnlineMessageService {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(SysMessageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OnlineMessageService.class);
 
     @Autowired
     private LinDeviceDao linDeviceDao;
 
     @Autowired
-    private XioDiviceDao xioDiviceDao;
+    private XioDeviceDao xioDeviceDao;
 
     @Autowired
     private MqttPublisher mqttPublisher;
@@ -54,19 +54,18 @@ public class SysMessageService {
      * TODO 如果设备的WIFI模块换了，即mac变了，需要在后台对这台设备进行更换mac，让deviceId和mac重新配对
      *
      **/
-    public Message<String> handleOnOff(SysMessage sysMessage) {
+    public Message<String> handleOnOff(OnlineMessage onlineMessage) {
         try {
-            if (sysMessage == null) {
+            if (onlineMessage == null) {
                 return null;
             }
-            OnlineMessage onlineMessage = (OnlineMessage) sysMessage;
             if (true) {
                 return handleXio(onlineMessage);
             } else {
                 return handleLin(onlineMessage);
             }
         } catch (Exception e) {
-            LOGGER.error(">>> handleOnOff error, sysMessage:{}", sysMessage, e);
+            LOGGER.error(">>> handleOnOff error, onlineMessage:{}", onlineMessage, e);
             return null;
         }
     }
@@ -85,16 +84,16 @@ public class SysMessageService {
             if (!clientId.startsWith(ClientTypeEnum.DEV.name())) {
                 return null;
             }
-            XioDevice xioDevice = xioDiviceDao.getBySn(sn);
+            XioDevice xioDevice = xioDeviceDao.getBySn(sn);
             if (xioDevice == null) {
                 return null;
             }
             // 保存设备每次上下线消息
-            xioDiviceDao.saveOnlineRecord(onlineMessage, sn, xioDevice.getBizId());
+            xioDeviceDao.saveOnlineRecord(onlineMessage, sn, xioDevice.getBizId());
             // 处理上下线
             if (onlineMessage.getOnline()) {
                 LOGGER.info(">>> online, sn:{}, clientId:{}, ip:{}", sn, clientId, onlineMessage.getIpAddress());
-                xioDiviceDao.online(onlineMessage.getClientId(), sn, onlineMessage.getIpAddress());
+                xioDeviceDao.online(onlineMessage.getClientId(), sn, onlineMessage.getIpAddress());
 
                 // 网关上线后，通知其上报电梯信息
                 if (XioDeviceTypeEnum.TYPE01.name().equals(deviceType)) {
@@ -119,7 +118,7 @@ public class SysMessageService {
                 }
             } else {
                 LOGGER.info(">>> offline, sn:{}, clientId:{}, reason:{}", sn, onlineMessage.getClientId(), onlineMessage.getReason());
-                xioDiviceDao.offline(onlineMessage.getClientId(), sn);
+                xioDeviceDao.offline(onlineMessage.getClientId(), sn);
             }
         } catch (Exception e) {
             LOGGER.error(">>> handleOnOff error, onlineMessage:{}", onlineMessage, e);
