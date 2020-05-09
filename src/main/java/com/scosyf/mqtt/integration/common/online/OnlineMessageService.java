@@ -8,18 +8,13 @@
 package com.scosyf.mqtt.integration.common.online;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
-import com.scosyf.mqtt.integration.linnei.common.entity.LinDevice;
-import com.scosyf.mqtt.integration.xiao.common.entity.XioDevice;
 import com.scosyf.mqtt.integration.common.constant.ClientTypeEnum;
 import com.scosyf.mqtt.integration.common.constant.MqttConstant;
-import com.scosyf.mqtt.integration.common.constant.TopicTypeEnum;
-import com.scosyf.mqtt.integration.xiao.common.constant.XioDeviceTypeEnum;
+import com.scosyf.mqtt.integration.linnei.common.entity.LinDevice;
 import com.scosyf.mqtt.integration.linnei.dao.LinDeviceDao;
-import com.scosyf.mqtt.integration.xiao.dao.XioDeviceDao;
-import com.scosyf.mqtt.integration.common.mqtt.MqttPublisher;
-import com.scosyf.mqtt.integration.xiao.util.MsgUtil;
-import org.apache.commons.collections4.CollectionUtils;
+import com.scosyf.mqtt.integration.xiao.common.constant.XioDeviceTypeEnum;
+import com.scosyf.mqtt.integration.xiao.common.entity.XioDevice;
+import com.scosyf.mqtt.integration.xiao.service.XioDeviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +22,6 @@ import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  *
@@ -40,16 +33,15 @@ public class OnlineMessageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OnlineMessageService.class);
 
     @Autowired
+    private XioDeviceService xioDeviceService;
+
+    @Autowired
     private LinDeviceDao linDeviceDao;
-
-    @Autowired
-    private XioDeviceDao xioDeviceDao;
-
-    @Autowired
-    private MqttPublisher mqttPublisher;
 
     /**
      * 记录设备上下线
+     *
+     * TODO 设备发送消息到消息应用，必须是经过EMQ-http认证的
      *
      * TODO 如果设备的WIFI模块换了，即mac变了，需要在后台对这台设备进行更换mac，让deviceId和mac重新配对
      *
@@ -75,50 +67,54 @@ public class OnlineMessageService {
      **/
     private Message handleXio(OnlineMessage onlineMessage) {
         try {
-            // clientid >>> DEV_{deviceType}_{sn}_{Random}
+            /**
+             * DEV_{deviceType}_{sn}_{Random} >>> DEV_TYPE01_10016000319081004599_4599
+             * H5_{timestamp}_{phone}_{Random}_{sn} >>> H5_1587979309276_13957130122_7361_100160003200410046
+             **/
             String clientId = onlineMessage.getClientId();
             String[] clientItems = clientId.split(MqttConstant.XIAO_SPLITTER);
-            String deviceType = clientItems[1];
-            String sn = clientItems[2];
-            // 只处理设备
-            if (!clientId.startsWith(ClientTypeEnum.DEV.name())) {
-                return null;
-            }
-            XioDevice xioDevice = xioDeviceDao.getBySn(sn);
-            if (xioDevice == null) {
-                return null;
-            }
-            // 保存设备每次上下线消息
-            xioDeviceDao.saveOnlineRecord(onlineMessage, sn, xioDevice.getBizId());
-            // 处理上下线
-            if (onlineMessage.getOnline()) {
-                LOGGER.info(">>> online, sn:{}, clientId:{}, ip:{}", sn, clientId, onlineMessage.getIpAddress());
-                xioDeviceDao.online(onlineMessage.getClientId(), sn, onlineMessage.getIpAddress());
-
-                // 网关上线后，通知其上报电梯信息
-                if (XioDeviceTypeEnum.TYPE01.name().equals(deviceType)) {
-                    // TODO 模拟sn拿到电梯信息
-                    List<String> liftRealNumList = Lists.newArrayList();
-                    if (CollectionUtils.isNotEmpty(liftRealNumList)) {
-                        // 通知网关的topic：/xio/{type}/{ID}/down
-                        String topic = MqttConstant.TOPIC_SPLITTER + deviceType + MqttConstant.TOPIC_SPLITTER
-                                + sn + MqttConstant.TOPIC_SPLITTER + TopicTypeEnum.down.name();
-                        // 消息体：byte[]
-                        List<Object> all = MsgUtil.downStatData(liftRealNumList);
-                        for (Object data : all) {
-                            try {
-                                Thread.sleep(1000);
-                                LOGGER.info(">>> handleDownStat sn:{}, topic:{}, payload:{}", sn, topic, data);
-                                mqttPublisher.send(topic, data);
-                            } catch (InterruptedException e) {
-                                LOGGER.error(">>> sleep error", e);
-                            }
-                        }
-                    }
+            // TODO 处理设备 DEV
+            if (clientId.startsWith(ClientTypeEnum.DEV.name())) {
+                String sn = clientItems[2];
+                XioDevice xioDevice = xioDeviceService.getBySn(sn);
+                if (xioDevice == null) {
+                    return null;
                 }
+                // 保存设备每次上下线消息
+                xioDeviceService.saveOnlineRecord(onlineMessage, sn, xioDevice.getBizId());
+                // 处理上下线
+                if (onlineMessage.getOnline()) {
+                    LOGGER.info(">>> online, sn:{}, clientId:{}, ip:{}", sn, clientId, onlineMessage.getIpAddress());
+                    xioDeviceService.online(onlineMessage.getClientId(), sn, onlineMessage.getIpAddress());
+                    // 网关上线后，通知其上报电梯信息
+                    String deviceType = clientItems[1];
+                    if (XioDeviceTypeEnum.TYPE01.name().equals(deviceType)) {
+                        xioDeviceService.handleDown(sn, deviceType, true);
+                    }
+                } else {
+                    LOGGER.info(">>> offline, sn:{}, clientId:{}, reason:{}", sn, onlineMessage.getClientId(), onlineMessage.getReason());
+                    xioDeviceService.offline(onlineMessage.getClientId(), sn);
+                }
+            } else if (clientId.startsWith(ClientTypeEnum.H5.name())) {
+//                // TODO 处理用户 H5
+//                String sn = clientItems[4];
+//                if (onlineMessage.getOnline()) {
+//                    LOGGER.info(">>> H5 online, sn:{}, clientId:{}", sn, clientId);
+//                    deviceMqttService.gatewaySign(sn, clientId, true);
+//                    // 用户上线后，通知网关开始实时上报电梯信息
+//                    xioDeviceService.handleDown(sn, XioDeviceTypeEnum.TYPE01.name(), true);
+//                } else {
+//                    ResultDto result = deviceMqttService.gatewaySign(sn, clientId, false);
+//                    LOGGER.info(">>> H5 offline, sn:{}, clientId:{}, res:{}", sn, clientId, JSONObject.toJSONString(result));
+//                    if (result.isSuccess() && result.getData() != null) {
+//                        if ((long) result.getData() <= 0) {
+//                            // 通知网关关闭数据上报
+//                            handleDownStat(sn, false);
+//                        }
+//                    }
+//                }
             } else {
-                LOGGER.info(">>> offline, sn:{}, clientId:{}, reason:{}", sn, onlineMessage.getClientId(), onlineMessage.getReason());
-                xioDeviceDao.offline(onlineMessage.getClientId(), sn);
+                // TODO 其他客户端类型
             }
         } catch (Exception e) {
             LOGGER.error(">>> handleOnOff error, onlineMessage:{}", onlineMessage, e);

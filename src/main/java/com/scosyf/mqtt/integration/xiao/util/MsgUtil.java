@@ -91,19 +91,24 @@ public class MsgUtil {
                 liftInfoList.add(outerInfo);
                 start += OUTER_DATA_LENGTH;
             } else {
-
+                LOGGER.error(">>> convertLiftData unknown func, dataCharArr:{}", dataCharArr);
+                break;
             }
         } while (start < dataCharArr.length);
         return liftInfoList;
     }
 
-    public static List<Object> downStatData(List<String> liftRealNumList) {
+    public static List<Object> downStatData(List<String> liftRealNumList, boolean open) {
 
         List<Byte> basicData = new ArrayList<>();
         // 前后门 (3)，0：前门，1：后门，2：前后门
         basicData.add((byte) 2);
         // 上传开关 (4)，0：关闭上传状态，1：开启上传状态
-        basicData.add((byte) 1);
+        if (open) {
+            basicData.add((byte) 1);
+        } else {
+            basicData.add((byte) 0);
+        }
         // 电梯数量 (5)
         int liftCount = liftRealNumList.size();
         basicData.add((byte) liftCount);
@@ -192,7 +197,7 @@ public class MsgUtil {
     public static void main(String[] args) {
         // [0, 5, 2, 1, 2, 1, 127, -67, -116],[1, 5, 2, 1, 2, 1, 127, -67, -116]
         // [0, 5, 2, 1, 2, 1, 127, 189, 140],[1, 5, 2, 1, 2, 1, 127, 189, 140]
-        System.out.println(JSONObject.toJSONString(downStatData(Lists.newArrayList("1", "127"))));
+        System.out.println(JSONObject.toJSONString(downStatData(Lists.newArrayList("1", "127"), true)));
 
         // 2,7,0,2,2,4,2,2,1,3,114 >>> 0,2,2,4,2,2,1
         System.out.println(checkCRC(Lists.newArrayList((byte)0, (byte)2, (byte)2, (byte)4, (byte)2, (byte)2, (byte)1), 7));
