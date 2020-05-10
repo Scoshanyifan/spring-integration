@@ -24,7 +24,7 @@ import java.util.Date;
 @Repository
 public class XioDeviceDao {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinDeviceDao.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XioDeviceDao.class);
 
     @Autowired
     private MongoTemplate mongoTemplate;

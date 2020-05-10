@@ -1,5 +1,6 @@
 package com.scosyf.mqtt.integration.xiao.common.entity;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
@@ -15,24 +16,17 @@ import java.io.Serializable;
 @Document(value = "lift_stat")
 public class LiftStat implements Serializable {
 
-    private static final long serialVersionUID = -90008405L;
-
+    @Id
     private String id;
-
     private String liftId;
-
     private String realNum;
-
     private String gatewayId;
-
     private Integer callCount;
-
     private Boolean liftOnline;
     /**
      * 电梯使用状态：1-正常 2-满载 3-锁梯
      */
     private Integer liftState;
-
     private Integer currFloor;
     private Integer door;
     private Integer direction;
