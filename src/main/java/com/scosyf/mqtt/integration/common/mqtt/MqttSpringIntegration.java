@@ -1,11 +1,11 @@
 package com.scosyf.mqtt.integration.common.mqtt;
 
-import com.scosyf.mqtt.integration.xiao.common.message.RawMessage;
 import com.scosyf.mqtt.integration.common.config.MqttYmlConfig;
 import com.scosyf.mqtt.integration.common.constant.MqttConstant;
-import com.scosyf.mqtt.integration.common.constant.TopicTypeEnum;
 import com.scosyf.mqtt.integration.common.util.ExecutorFactoryUtil;
 import com.scosyf.mqtt.integration.common.util.MessageTransferUtil;
+import com.scosyf.mqtt.integration.xiao.common.constant.XioTopicTypeEnum;
+import com.scosyf.mqtt.integration.xiao.common.message.RawMessage;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,12 +173,13 @@ public class MqttSpringIntegration {
     }
 
     /**
-     * MessageHandler和MessageProducer：
-     * 两者都是消息处理组件，区别是前者Contract for handling a Message，而后者是sending messages to a MessageChannel
-     * 即一个可以理解为普通站台（用于后面的消息出站），另一个中央大站（消息入站）
+     * MessageHandler和MessageProducer：两者都是消息处理组件
+     *
+     * 前者用于消息出站，Contract for handling a Message
+     * 后者用于消息入站，sending messages to a MessageChannel
      *
      **/
-    @Bean
+    @Bean("messageHandler")
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(
@@ -269,17 +270,20 @@ public class MqttSpringIntegration {
 //                .get();
                 /** 处理原生消息 */
                 .handle(MessageTransferUtil::mqttMessage2RawMessage)
-                .<RawMessage, TopicTypeEnum>route(
-                        RawMessage::getTopicTypeEnum,
+                .<RawMessage, XioTopicTypeEnum>route(RawMessage::getXioDeviceTypeEnum,
                         mapping -> mapping
-                                .subFlowMapping(TopicTypeEnum.up, sf -> sf
-                                        .handle("upService", "handleUp")
-                                        .filter(Objects::nonNull)
-                                        .handle(mqttOutbound()))
-                                .subFlowMapping(TopicTypeEnum.query, sf -> sf
-                                        .handle("queryService", "handleQuery")
-                                        .filter(Objects::nonNull)
-                                        .handle(mqttOutbound()))
+                                .subFlowMapping(XioTopicTypeEnum.upInfo,
+                                        sf -> sf.handle("upService", "handleUp")
+                                                .filter(Objects::nonNull)
+                                                .handle(mqttOutbound()))
+                                .subFlowMapping(XioTopicTypeEnum.query,
+                                        sf -> sf.handle("queryService", "handleQuery")
+                                                .filter(Objects::nonNull)
+                                                .handle(mqttOutbound()))
+                                .subFlowMapping(XioTopicTypeEnum.nil,
+                                        sf -> sf.handle("nilService", "handle")
+                                                .filter(Objects::nonNull)
+                                                .handle(mqttOutbound()))
                                 .defaultOutputToParentFlow()
                 )
                 .get();

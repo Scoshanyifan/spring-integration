@@ -91,6 +91,7 @@ public class MsgUtil {
                 liftInfoList.add(outerInfo);
                 start += OUTER_DATA_LENGTH;
             } else {
+                // TODO 正式环境出现过CPU负载过高，原因是死循环，如果参数不在inner和outer中就会出现
                 LOGGER.error(">>> convertLiftData unknown func, dataCharArr:{}", dataCharArr);
                 break;
             }

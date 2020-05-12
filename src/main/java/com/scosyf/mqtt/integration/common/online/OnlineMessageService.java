@@ -14,7 +14,7 @@ import com.scosyf.mqtt.integration.linnei.common.entity.LinDevice;
 import com.scosyf.mqtt.integration.linnei.dao.LinDeviceDao;
 import com.scosyf.mqtt.integration.xiao.common.constant.XioDeviceTypeEnum;
 import com.scosyf.mqtt.integration.xiao.common.entity.XioDevice;
-import com.scosyf.mqtt.integration.xiao.service.XioDeviceService;
+import com.scosyf.mqtt.integration.xiao.service.DeviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class OnlineMessageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OnlineMessageService.class);
 
     @Autowired
-    private XioDeviceService xioDeviceService;
+    private DeviceService deviceService;
 
     @Autowired
     private LinDeviceDao linDeviceDao;
@@ -76,39 +76,39 @@ public class OnlineMessageService {
             // TODO 处理设备 DEV
             if (clientId.startsWith(ClientTypeEnum.DEV.name())) {
                 String sn = clientItems[2];
-                XioDevice xioDevice = xioDeviceService.getBySn(sn);
+                XioDevice xioDevice = deviceService.getBySn(sn);
                 if (xioDevice == null) {
                     return null;
                 }
                 // 保存设备每次上下线消息
-                xioDeviceService.saveOnlineRecord(onlineMessage, sn, xioDevice.getBizId());
+                deviceService.saveOnlineRecord(onlineMessage, sn, xioDevice.getBizId());
                 // 处理上下线
                 if (onlineMessage.getOnline()) {
                     LOGGER.info(">>> online, sn:{}, clientId:{}, ip:{}", sn, clientId, onlineMessage.getIpAddress());
-                    xioDeviceService.online(onlineMessage.getClientId(), sn, onlineMessage.getIpAddress());
+                    deviceService.online(onlineMessage.getClientId(), sn, onlineMessage.getIpAddress());
                     // 网关上线后，通知其上报电梯数据
                     String deviceType = clientItems[1];
                     if (XioDeviceTypeEnum.TYPE01.name().equals(deviceType)) {
-                        xioDeviceService.handleDown4Gateway(sn, true);
+                        deviceService.handleDown4Gateway(sn, true);
                     }
                 } else {
                     LOGGER.info(">>> offline, sn:{}, clientId:{}, reason:{}", sn, onlineMessage.getClientId(), onlineMessage.getReason());
-                    xioDeviceService.offline(onlineMessage.getClientId(), sn);
+                    deviceService.offline(onlineMessage.getClientId(), sn);
                 }
             } else if (clientId.startsWith(ClientTypeEnum.H5.name())) {
                 // TODO 处理用户 H5
                 String sn = clientItems[4];
                 if (onlineMessage.getOnline()) {
                     LOGGER.info(">>> H5 online, sn:{}, clientId:{}", sn, clientId);
-                    xioDeviceService.gatewaySign(sn, clientId, true);
+                    deviceService.gatewaySign(sn, clientId, true);
                     // 用户上线后，通知网关开始实时上报电梯信息
-                    xioDeviceService.handleDown4Gateway(sn, true);
+                    deviceService.handleDown4Gateway(sn, true);
                 } else {
                     LOGGER.info(">>> H5 offline, sn:{}, clientId:{}、", sn, clientId);
-                    boolean ifSign= xioDeviceService.gatewaySign(sn, clientId, false);
+                    boolean ifSign= deviceService.gatewaySign(sn, clientId, false);
                     // 如果该网关在无连接，通知其关闭数据上报
                     if (!ifSign) {
-                        xioDeviceService.handleDown4Gateway(sn, false);
+                        deviceService.handleDown4Gateway(sn, false);
                     }
                 }
             } else {
@@ -165,8 +165,10 @@ public class OnlineMessageService {
                 return null;
             }
             // 保留消息的topic：/linnei/retain/
-            String topic = MqttConstant.TOPIC_SPLITTER + MqttConstant.LINNEI_TOPIC_PERFIX + MqttConstant.TOPIC_SPLITTER
-                    + MqttConstant.RETAIN_TOPIC_SUFFIX + MqttConstant.TOPIC_SPLITTER;
+            String topic =
+                    MqttConstant.TOPIC_SPLITTER + MqttConstant.LINNEI_TOPIC_PERFIX +
+                    MqttConstant.TOPIC_SPLITTER + MqttConstant.RETAIN_TOPIC_SUFFIX +
+                    MqttConstant.TOPIC_SPLITTER;
             Message<String> retainMsg = MessageBuilder
                     .withPayload(deviceLastOnlinePayload.toJSONString())
                     .setHeader(MqttHeaders.TOPIC, topic)

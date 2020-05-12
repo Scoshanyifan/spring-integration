@@ -24,9 +24,9 @@ import java.util.List;
  * @create: 2020-05-08 13:20
  **/
 @Component("deviceService")
-public class XioDeviceService {
+public class DeviceService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(XioDeviceService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceService.class);
 
     @Autowired
     private XioDeviceDao xioDeviceDao;
@@ -69,9 +69,12 @@ public class XioDeviceService {
             List<String> liftRealNumList = Lists.newArrayList("0", "1");
             LOGGER.info(">>> handleDown liftRealNumList:{}", liftRealNumList);
             if (CollectionUtils.isNotEmpty(liftRealNumList)) {
-                // 通知网关的topic：/{type}/{ID}/down
-                String topic = MqttConstant.TOPIC_SPLITTER + XioDeviceTypeEnum.TYPE01.name() + MqttConstant.TOPIC_SPLITTER
-                        + gatewaySn + MqttConstant.TOPIC_SPLITTER + TopicTypeEnum.down.name();
+                // 通知网关的topic：/xio/{type}/{ID}/down
+                String topic =
+                        MqttConstant.TOPIC_SPLITTER + MqttConstant.XIO_TOPIC_PERFIX +
+                        MqttConstant.TOPIC_SPLITTER + XioDeviceTypeEnum.TYPE01.name() +
+                        MqttConstant.TOPIC_SPLITTER + gatewaySn +
+                        MqttConstant.TOPIC_SPLITTER + TopicTypeEnum.down.name();
                 // 消息体：byte[]
                 List<Object> all = MsgUtil.downStatData(liftRealNumList, open);
                 for (Object data : all) {

@@ -1,6 +1,7 @@
 package com.scosyf.mqtt.integration.xiao.common.message;
 
 import com.scosyf.mqtt.integration.common.base.AbstractMessage;
+import com.scosyf.mqtt.integration.xiao.common.constant.XioTopicTypeEnum;
 
 /**
  * @project: spring-integration
@@ -12,6 +13,8 @@ public class RawMessage extends AbstractMessage {
     private String payload;
 
     private String sn;
+
+    private XioTopicTypeEnum xioDeviceTypeEnum;
 
     public String getSn() {
         return sn;
@@ -29,4 +32,11 @@ public class RawMessage extends AbstractMessage {
         this.payload = payload;
     }
 
+    public XioTopicTypeEnum getXioDeviceTypeEnum() {
+        return xioDeviceTypeEnum;
+    }
+
+    public void setXioDeviceTypeEnum(XioTopicTypeEnum xioDeviceTypeEnum) {
+        this.xioDeviceTypeEnum = xioDeviceTypeEnum;
+    }
 }

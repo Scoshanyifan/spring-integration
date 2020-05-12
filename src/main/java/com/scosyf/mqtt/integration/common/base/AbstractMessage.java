@@ -1,7 +1,5 @@
 package com.scosyf.mqtt.integration.common.base;
 
-import com.scosyf.mqtt.integration.common.constant.TopicTypeEnum;
-
 import java.util.Arrays;
 
 /**
@@ -24,7 +22,6 @@ public abstract class AbstractMessage {
      **/
     private String[] clientItems;
 
-    TopicTypeEnum topicTypeEnum;
 
     public String[] getTopicItems() {
         return topicItems;
@@ -34,13 +31,6 @@ public abstract class AbstractMessage {
         this.topicItems = topicItems;
     }
 
-    public TopicTypeEnum getTopicTypeEnum() {
-        return topicTypeEnum;
-    }
-
-    public void setTopicTypeEnum(TopicTypeEnum topicTypeEnum) {
-        this.topicTypeEnum = topicTypeEnum;
-    }
 
     public String[] getClientItems() {
         return clientItems;
@@ -55,7 +45,6 @@ public abstract class AbstractMessage {
         return "AbstractMessage{" +
                 "topicItems=" + Arrays.toString(topicItems) +
                 ", clientItems=" + Arrays.toString(clientItems) +
-                ", topicTypeEnum=" + topicTypeEnum +
                 '}';
     }
 }

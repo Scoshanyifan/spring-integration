@@ -2,16 +2,16 @@ package com.scosyf.mqtt.integration.common.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.scosyf.mqtt.integration.common.constant.MqttConstant;
+import com.scosyf.mqtt.integration.common.online.OnlineMessage;
+import com.scosyf.mqtt.integration.linnei.common.constant.LinBizTypeEnum;
+import com.scosyf.mqtt.integration.linnei.common.constant.LinDeviceTypeEnum;
 import com.scosyf.mqtt.integration.linnei.common.message.BizMessage;
 import com.scosyf.mqtt.integration.linnei.common.message.J00Message;
 import com.scosyf.mqtt.integration.linnei.common.message.J05Message;
 import com.scosyf.mqtt.integration.linnei.common.message.JERMessage;
-import com.scosyf.mqtt.integration.common.online.OnlineMessage;
+import com.scosyf.mqtt.integration.xiao.common.constant.XioTopicTypeEnum;
 import com.scosyf.mqtt.integration.xiao.common.message.RawMessage;
-import com.scosyf.mqtt.integration.common.constant.MqttConstant;
-import com.scosyf.mqtt.integration.common.constant.TopicTypeEnum;
-import com.scosyf.mqtt.integration.linnei.common.constant.LinBizTypeEnum;
-import com.scosyf.mqtt.integration.linnei.common.constant.LinDeviceTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.mqtt.support.MqttHeaders;
@@ -75,7 +75,7 @@ public class MessageTransferUtil {
     }
 
     /**
-     * 转为原生数据
+     * 转为原生数据，payload为字节数组，按照Ascii的规则（打印会乱码，因为0-32是控制符）
      *
      **/
     public static RawMessage mqttMessage2RawMessage(String payload, Map<String, Object> headers) {
@@ -88,11 +88,12 @@ public class MessageTransferUtil {
             rawMessage.setTopicItems(topicItems);
             rawMessage.setSn(topicItems[topicItems.length - 2]);
             String topicType = topicItems[topicItems.length - 1];
-            TopicTypeEnum topicTypeEnum = TopicTypeEnum.of(topicType);
-            rawMessage.setTopicTypeEnum(topicTypeEnum);
+            rawMessage.setXioDeviceTypeEnum(XioTopicTypeEnum.of(topicType));
             return rawMessage;
         } catch (Exception e) {
-            LOGGER.error("mqttMessage2RawMessage 转为原生数据", e);
+            LOGGER.error("mqttMessage2RawMessage 转为原生数据异常", e);
+            RawMessage rawMessage = new RawMessage();
+            rawMessage.setXioDeviceTypeEnum(XioTopicTypeEnum.nil);
             return null;
         }
     }
