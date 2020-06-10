@@ -2,8 +2,6 @@ package com.scosyf.mqtt.integration.common.mqtt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -20,8 +18,16 @@ public class MqttSender {
 
     private static final Logger logger = LoggerFactory.getLogger(MqttSender.class);
 
-    @Autowired
-    @Qualifier("messageHandler")
+    /**
+     * Caused by: org.springframework.beans.factory.BeanCurrentlyInCreationException:
+     * Error creating bean with name 'messageHandler':
+     * Requested bean is currently in creation: Is there an unresolvable circular reference?
+     *
+     * 因为有两个消息发出类：MqttPublisher 和MqttSender 导致messageHandler循环引用
+     *
+     **/
+//    @Autowired
+//    @Qualifier("messageHandler")
     private MessageHandler messageHandler;
 
     public void send(String topic, Object payload) {

@@ -58,8 +58,8 @@ Confiuration:
           IfFileName:
             - glob: farm-*.log
           IfLastModified:
-          # - age: 90d
-            - age: 3m
+           - age: 7d
+#            - age: 3m
       # 异常日志
     - name: ERROR_FILE
       fileName: ${LOG_ERROR_PATH}/error.log

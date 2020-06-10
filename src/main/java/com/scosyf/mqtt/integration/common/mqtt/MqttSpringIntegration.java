@@ -87,10 +87,10 @@ public class MqttSpringIntegration {
         // 设置最大并发数
         options.setMaxInflight(10);
         // 设置自动重连
-        options.setAutomaticReconnect(false);
+//        options.setAutomaticReconnect(false);
         // 设置是否清除session（如果不清除，clientId不变的情况下会保存身份信息和离线消息）
         // TODO 设置后重启消息应用，离线消息会正常处理（但是存在报错现象，提示subscriber找不到）
-        options.setCleanSession(false);
+//        options.setCleanSession(false);
 
         // 设置遗嘱
 //        options.setWill();
@@ -179,7 +179,7 @@ public class MqttSpringIntegration {
      * 后者用于消息入站，sending messages to a MessageChannel
      *
      **/
-    @Bean("messageHandler")
+    @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(

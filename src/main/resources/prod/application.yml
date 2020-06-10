@@ -1,13 +1,30 @@
 server:
-  port: 9090
+  port: 9999
 
 spring:
   data:
     mongodb:
-      uri:
-      port:
-      username:
-      password:
+#      uri: mongodb://172.31.10.64/mqtt
+      uri: mongodb://mqtt:mqtt@172.31.10.64:27017/mqtt
+      options:
+        min-connections-per-host: 20
+        max-connections-per-host: 20
+        threads-allowed-to-block-for-connection-multiplier: 5
+        server-selection-timeout: 30000
+        max-wait-time: 120000
+        max-connection-idel-time: 0
+        max-connection-life-time: 0
+        connect-timeout: 10000
+        socket-timeout: 0
+        socket-keep-alive: false
+        ssl-enabled: false
+        ssl-invalid-host-name-allowed: false
+        always-use-m-beans: false
+        heartbeat-socket-timeout: 20000
+        heartbeat-connect-timeout: 20000
+        min-heartbeat-frequency: 500
+        heartbeat-frequency: 10000
+        local-threshold: 15
 
 # log4j2
 logging:
@@ -15,23 +32,23 @@ logging:
 
 mqtt:
   # 客户端信息
-  host:
-  username:
-  password:
+  host: tcp://127.0.0.1:1883
+  username: mqtt
+  password: 123456
   cleansession: false
   # 如果非localhost，需要在etc/acl.conf中配置规则允许此client获取 $SYS/# 消息
-  clientid: msg-publisher
+  clientid: consumer-publisher
   # 业务消息订阅
-  bizclientid: msg-biz-subscriber
+  bizclientid: mqtt-biz
   biztopic:
-  # /linnei/98D863BE7200/query >>> d:rinnai:SR:01:SR:98D863BE7200:03EE
-  - /linnei/+/+
-  # /xio/TYPE01/100160003190810045/up >>> DEV_{deviceType}_{sn}_{Random}
-  - /xio/+/+/+
+  # rinnai/SR/01/SR/F0FE6BAE428E/res/
+  - /+/+/upInfo
+  - /+/+/notify
+  - /+/+/query
   # 系统消息订阅，topic参考 https://github.com/mqtt/mqtt.github.io/wiki/SYS-Topics
-  sysclientid: mis-sys-subscriber
+  sysclientid: mqtt-sys
   systopic:
-  # $SYS/brokers/emqttd-linnei@10.45.33.195/clients/d:rinnai:SR:01:SR:98D863BE7200:03EE/connected
+  # $SYS/brokers/emqttd-linnei@10.45.33.195/clients/a:rinnai:SR:01:SR:186582626671565159163590/connected
   - $SYS/brokers/+/clients/+/connected
   - $SYS/brokers/+/clients/+/disconnected
 

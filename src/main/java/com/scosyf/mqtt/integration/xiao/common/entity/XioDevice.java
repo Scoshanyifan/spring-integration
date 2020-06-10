@@ -12,7 +12,7 @@ import java.util.Date;
  * @author: kunbu
  * @create: 2020-04-10 15:48
  **/
-@Document(collection = "lin_device")
+@Document(collection = "xio_device")
 public class XioDevice {
 
     @Id
